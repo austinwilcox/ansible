@@ -4,6 +4,6 @@
   tasks:
     - name: Dotfiles
       ansible.builtin.git:
-        repo: 'https://github.com/austinwilcox/dotfiles'
+        repo: 'git@github.com:austinwilcox/dotfiles.git'
         dest: "{{ lookup('env', 'HOME') }}/.dotfiles"
         version: master
