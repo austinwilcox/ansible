@@ -1,0 +1,20 @@
+- name: Install Deno for User Austin
+  hosts: localhost
+
+  tasks:
+    - name: Download Deno binary
+      get_url:
+        url: https://deno.land/x/install/install.sh
+        dest: "{{ lookup('env', 'HOME') }}/Downloads/install-deno.sh"
+        mode: '+x'  # Make the script executable
+
+    - name: Run Deno installer script for user Austin
+      command: "{{ lookup('env', 'HOME') }}/Downloads/install-deno.sh"
+      args:
+        creates: "{{ lookup('env', 'HOME') }}/.deno/bin/deno"  # Adjust the path for user Austin
+
+    - name: Add Deno to PATH for user Austin
+      lineinfile:
+        path: "{{ lookup('env', 'HOME') }}/.bashrc"
+        line: "export PATH='$PATH:{{ lookup('env', 'HOME') }}/.deno/bin'"  # Adjust the path for user Austin
+        state: present

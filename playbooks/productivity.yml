@@ -1,0 +1,27 @@
+- name: Install Productivity Suite
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: shutter ppa (ppa:linuxuprising/shutter)
+      become: true
+      apt_repository:
+       repo: ppa:linuxuprising/shutter
+       state: present
+       update_cache: False
+      tags:
+        - install
+        - productivity
+
+    - name: Update packages
+      apt:
+        upgrade: 'yes'
+
+    - name: Install packages
+      become: true
+      apt:
+        name: [ "curl", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "shutter", "alacritty" ]
+        state: latest
+      tags:
+        - install
+        - productivity
