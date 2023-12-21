@@ -1,9 +1,5 @@
-- name: Pull Zettelkasten
-  hosts: localhost
-
-  tasks:
-    - name: Zettelkasten
-      ansible.builtin.git:
-        repo: 'git@github.com/austinwilcox/zettelkasten-V2'
-        dest: "{{ lookup('env', 'HOME') }}/ZettelkastenV2"
-        version: master
+- name: Zettelkasten
+  ansible.builtin.git:
+    repo: 'git@github.com/austinwilcox/zettelkasten-V2'
+    dest: "{{ lookup('env', 'HOME') }}/ZettelkastenV2"
+    version: master

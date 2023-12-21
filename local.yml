@@ -14,12 +14,27 @@
       - install
       - core
   tasks:
-    # - include: tasks/ssh.yml
-    # - include: tasks/basic.yml
-    # - include: tasks/deno.yml
+    - include: tasks/ssh.yml
+      tags:
+        - ssh
+        - git
+    - include: tasks/basic.yml
+      tags:
+        - setup
+    - include: tasks/deno.yml
+      tags:
+        - deno
+        - ts
+        - js
     - include: tasks/disconnected.yml
-    # - include: tasks/brave.yml
-    # - include: tasks/dotfiles.yml
-    # - include: tasks/zettelkasten.yml
-    # - include: tasks/productivity.yml
-    # - include: tasks/git-setup.yml
+    - include: tasks/brave.yml
+    - include: tasks/dotfiles.yml
+      tags:
+        - setup
+    - include: tasks/zettelkasten.yml
+      tags:
+        - notes
+    - include: tasks/productivity.yml
+    - include: tasks/git-setup.yml
+      tags:
+        - setup

@@ -1,9 +1,5 @@
-- name: Pull .dotfiles from github
-  hosts: localhost
-
-  tasks:
-    - name: Dotfiles
-      ansible.builtin.git:
-        repo: 'git@github.com:austinwilcox/dotfiles.git'
-        dest: "{{ lookup('env', 'HOME') }}/.dotfiles"
-        version: master
+- name: Dotfiles
+  ansible.builtin.git:
+    repo: 'git@github.com:austinwilcox/dotfiles.git'
+    dest: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    version: master
