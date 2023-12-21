@@ -12,7 +12,8 @@
       state: present
     tags:
       - install
-      - core
+      - update
+      - setup
   tasks:
     - include: tasks/ssh.yml
       tags:
@@ -27,7 +28,11 @@
         - ts
         - js
     - include: tasks/disconnected.yml
+      tags: 
+        - setup
     - include: tasks/brave.yml
+      tags: 
+        - setup
     - include: tasks/dotfiles.yml
       tags:
         - setup
@@ -35,6 +40,8 @@
       tags:
         - notes
     - include: tasks/productivity.yml
+      tags: 
+        - setup
     - include: tasks/git-setup.yml
       tags:
         - setup
