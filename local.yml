@@ -1,4 +1,5 @@
-- hosts: localhost
+- name: Run all ansible scripts
+  hosts: localhost
   vars:
     source_key: "./.ssh/github_rsa"
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa"
@@ -7,18 +8,18 @@
     become: true
     apt:
       force_apt_get: true
-      update_cache: true
+      update_cache: false
       state: present
     tags:
       - install
       - core
   tasks:
-    - include: tasks/ssh.yml
-    - include: tasks/basic.yml
-    - include: tasks/deno.yml
+    # - include: tasks/ssh.yml
+    # - include: tasks/basic.yml
+    # - include: tasks/deno.yml
     - include: tasks/disconnected.yml
-    - include: tasks/brave.yml
-    - include: tasks/dotfiles.yml
-    - include: tasks/zettelkasten.yml
-    - include: tasks/productivity.yml
-    - include: tasks/git-setup.yml
+    # - include: tasks/brave.yml
+    # - include: tasks/dotfiles.yml
+    # - include: tasks/zettelkasten.yml
+    # - include: tasks/productivity.yml
+    # - include: tasks/git-setup.yml
