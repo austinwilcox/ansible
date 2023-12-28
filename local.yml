@@ -5,7 +5,7 @@
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa"
   pre_tasks:
   - name: Update Apt
-    become: true
+    # become: true
     apt:
       force_apt_get: true
       update_cache: false
@@ -15,12 +15,15 @@
       - update
       - setup
   tasks:
-    - include: tasks/ssh.yml
-      tags:
-        - ssh
-        - git
+    # - include: tasks/ssh.yml
+    #   tags:
+    #     - ssh
+    #     - git
     - include: tasks/basic.yml
       tags:
+        - setup
+    - include: tasks/productivity.yml
+      tags: 
         - setup
     - include: tasks/deno.yml
       tags:
@@ -39,9 +42,6 @@
     - include: tasks/zettelkasten.yml
       tags:
         - notes
-    - include: tasks/productivity.yml
-      tags: 
-        - setup
     - include: tasks/git-setup.yml
       tags:
         - setup

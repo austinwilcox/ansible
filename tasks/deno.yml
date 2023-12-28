@@ -1,3 +1,14 @@
+- name: Check if Downloads folder exists
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/Downloads"
+  register: downloads_folder
+
+- name: Create Downloads folder if it doesn't exist
+  file:
+    path: "{{ lookup('env', 'HOME') }}/Downloads"
+    state: directory
+  when: not downloads_folder.stat.exists
+
 - name: Download Deno binary
   get_url:
     url: https://deno.land/x/install/install.sh
