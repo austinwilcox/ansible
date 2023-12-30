@@ -5,7 +5,7 @@
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa"
   pre_tasks:
   - name: Update Apt
-    # become: true
+    become: true
     apt:
       force_apt_get: true
       update_cache: false

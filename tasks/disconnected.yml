@@ -11,5 +11,5 @@
   shell: "cd {{ lookup('env', 'HOME') }}/Software/tools/disconnected && {{ lookup('env', 'HOME') }}/.deno/bin/deno compile --allow-read --allow-env --allow-write --allow-run --output disconnected index.ts"
 
 - name: Move disconnected to /usr/local/bin
-  # become: yes
+  become: yes
   shell: "cd {{ lookup('env', 'HOME') }}/Software/tools/disconnected && cp disconnected /usr/local/bin"

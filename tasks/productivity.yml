@@ -10,7 +10,7 @@
 #     upgrade: 'yes'
 
 - name: Install packages
-  # become: true
+  become: true
   apt:
     name: [ "curl", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip" ]
     state: latest
