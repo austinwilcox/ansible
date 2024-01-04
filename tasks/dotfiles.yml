@@ -11,7 +11,7 @@
 - name: Print message to alert that dotfiles DO exist
   debug:
     msg: ".Dotfiles found, Should I delete the existing ones or not?"
-  when: not dotfiles.stat.exists
+  when: dotfiles.stat.exists and dotfiles.stat.isdir
 
 - name: If dotfiles do not exist
   when: not dotfiles.stat.exists
