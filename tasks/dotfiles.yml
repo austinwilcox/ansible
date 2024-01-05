@@ -28,7 +28,7 @@
 - name: Create .bashrc symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/.bashrc"
-    dest: "{{ lookup('env', 'HOME') }}"
+    dest: "{{ lookup('env', 'HOME') }}/"
     state: link
   when: not bashrc.stat.exists
 
@@ -40,7 +40,7 @@
 - name: Create .tmux.conf symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/.tmux.conf"
-    dest: "{{ lookup('env', 'HOME') }}"
+    dest: "{{ lookup('env', 'HOME') }}/"
     state: link
   when: not tmuxConf.stat.exists
 
@@ -52,13 +52,25 @@
 - name: Create compton.conf symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/compton.conf"
-    dest: "{{ lookup('env', 'HOME') }}/.config"
+    dest: "{{ lookup('env', 'HOME') }}/.config/"
     state: link
   when: not comptonConf.stat.exists
 
-- name: Does nvim conf exist
+- name: Does nvim directory exist in .config
   stat:
     path: "{{ lookup('env', 'HOME') }}/.config/nvim"
+  register: nvimDir
+
+- name: Create nvim directory
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+    state: directory
+    mode: '0755'
+  when: not nvimDir.stat.exists
+
+- name: Does nvim conf exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/nvim/lua"
   register: nvimConf
 
 - name: Create nvim symlink
