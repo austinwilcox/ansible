@@ -39,6 +39,7 @@
     - include: tasks/dotfiles.yml
       tags:
         - setup
+        - dotfiles
     - include: tasks/zettelkasten.yml
       tags:
         - notes
