@@ -29,6 +29,10 @@
       tags:
         - ssh
         - git
+    - include: tasks/dotfiles.yml
+      tags:
+        - setup
+        - dotfiles
     - include: tasks/deno.yml
       tags:
         - deno
@@ -40,10 +44,7 @@
     - include: tasks/brave.yml
       tags: 
         - setup
-    - include: tasks/dotfiles.yml
-      tags:
-        - setup
-        - dotfiles
     - include: tasks/zettelkasten.yml
       tags:
         - notes
+        - zk
