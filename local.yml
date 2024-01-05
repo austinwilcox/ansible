@@ -18,7 +18,7 @@
     - include: tasks/basic.yml
       tags:
         - setup
-    - include: tasks/productivity.yml
+    - include: tasks/packages.yml
       tags: 
         - setup
         - dotfiles
