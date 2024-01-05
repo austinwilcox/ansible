@@ -40,7 +40,7 @@
 - name: Create .tmux.conf symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/.tmux.conf"
-    dest: "{{ lookup('env', 'HOME') }}/"
+    dest: "{{ lookup('env', 'HOME') }}/.tmux.conf"
     state: link
   when: not tmuxConf.stat.exists
 
@@ -52,7 +52,7 @@
 - name: Create compton.conf symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/compton.conf"
-    dest: "{{ lookup('env', 'HOME') }}/.config/"
+    dest: "{{ lookup('env', 'HOME') }}/.config/compton.conf"
     state: link
   when: not comptonConf.stat.exists
 
@@ -76,7 +76,7 @@
 - name: Create nvim symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/nvim/luaConfig/lua"
-    dest: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+    dest: "{{ lookup('env', 'HOME') }}/.config/nvim/lua"
     state: link
   when: not nvimConf.stat.exists
 
@@ -88,9 +88,21 @@
 - name: Create init.lua symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/nvim/luaConfig/init.lua"
-    dest: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+    dest: "{{ lookup('env', 'HOME') }}/.config/nvim/init.lua"
     state: link
   when: not initLua.stat.exists
+
+- name: Does alacritty folder exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/alacritty"
+  register: alacrittyFolder
+
+- name: Create alacritty folder
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.config/alacritty"
+    state: directory
+    mode: '0755'
+  when: not alacrittyFolder.stat.exists
 
 - name: Does alacritty.yml exist
   stat:
@@ -100,6 +112,6 @@
 - name: Create alacritty.yml symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/alacritty.yaml"
-    dest: "{{ lookup('env', 'HOME') }}/.config/alacritty/"
+    dest: "{{ lookup('env', 'HOME') }}/.config/alacritty/alacritty.yaml"
     state: link
   when: not alacrittyYaml.stat.exists
