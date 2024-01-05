@@ -25,6 +25,7 @@
     - include: tasks/productivity.yml
       tags: 
         - setup
+        - dotfiles
     - include: tasks/deno.yml
       tags:
         - deno
