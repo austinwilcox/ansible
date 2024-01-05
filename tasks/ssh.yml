@@ -22,4 +22,4 @@
     state: present
     key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa.pub"
   with_fileglob:
-    - "{{ lookup('env', 'HOME') }}/.ssh/*.pub"
+    - "{{ lookup('env', 'HOME') }}/.ssh/github_rsa.pub"
