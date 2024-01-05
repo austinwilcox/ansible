@@ -22,6 +22,9 @@
       tags: 
         - setup
         - dotfiles
+    - include: tasks/git-setup.yml
+      tags:
+        - setup
     - include: tasks/ssh.yml
       tags:
         - ssh
@@ -44,6 +47,3 @@
     - include: tasks/zettelkasten.yml
       tags:
         - notes
-    - include: tasks/git-setup.yml
-      tags:
-        - setup
