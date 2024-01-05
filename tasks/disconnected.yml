@@ -3,7 +3,7 @@
 
 - name: Pull Disconnected
   ansible.builtin.git:
-    repo: 'git@github.com:austinwilcox/disconnected.git'
+    repo: 'https://github.com/austinwilcox/disconnected'
     dest: "{{ lookup('env', 'HOME') }}/Software/tools/disconnected"
     version: master
 
