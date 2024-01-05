@@ -12,7 +12,7 @@
 - name: Install packages
   become: true
   apt:
-    name: [ "curl", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip" ]
+    name: [ "curl", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "build-essential" ]
     state: latest
 
 # Provide install instructions for alacritty
