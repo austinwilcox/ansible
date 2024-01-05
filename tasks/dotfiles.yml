@@ -106,7 +106,7 @@
 
 - name: Does alacritty folder exist
   stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/alacritty/"
+    path: "{{ lookup('env', 'HOME') }}/.config/alacritty"
   register: alacrittyFolder
 
 - name: Create alacritty folder
