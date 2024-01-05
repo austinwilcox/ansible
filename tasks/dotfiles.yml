@@ -19,6 +19,10 @@
     dest: "{{ lookup('env', 'HOME') }}/.dotfiles"
     version: master
   when: not dotfiles.stat.exists
+
+- name: Install eza
+  shell: command -v cargo install eza
+  ignore_errors: yes
   
 - name: Does bashrc exist
   stat:

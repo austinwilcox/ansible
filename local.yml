@@ -22,6 +22,9 @@
       tags: 
         - setup
         - dotfiles
+    - include: tasks/rust.yml
+      tags:
+        - rust
     - include: tasks/git-setup.yml
       tags:
         - setup
@@ -44,9 +47,6 @@
     - include: tasks/brave.yml
       tags: 
         - setup
-    - include: tasks/rust.yml
-      tags:
-        - rust
     - include: tasks/zettelkasten.yml
       tags:
         - notes
