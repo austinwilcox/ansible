@@ -3,31 +3,6 @@
     path: "{{ lookup('env', 'HOME') }}/.dotfiles"
   register: dotfiles
 
-- name: Does bashrc exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.bashrc"
-  register: bashrc
-
-- name: Does .tmux.conf exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.tmux.conf"
-  register: tmuxConf
-
-- name: Does compton.conf exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/compton.conf"
-  register: comptonConf
-
-- name: Does nvim conf exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/nvim"
-  register: nvimConf
-
-- name: Does init.lua for nvim exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/nvim/init.lua"
-  register: initLua
-
 - name: Print message to alert that dotfiles DO NOT exist
   debug:
     msg: "dotfiles not found, at {{ lookup('env', 'HOME') }}/.dotfiles pulling from github"
@@ -45,12 +20,22 @@
     version: master
   when: not dotfiles.stat.exists
   
+- name: Does bashrc exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.bashrc"
+  register: bashrc
+
 - name: Create .bashrc symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/.bashrc"
     dest: "{{ lookup('env', 'HOME') }}"
     state: link
   when: not bashrc.stat.exists
+
+- name: Does .tmux.conf exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.tmux.conf"
+  register: tmuxConf
 
 - name: Create .tmux.conf symlink
   file:
@@ -59,12 +44,22 @@
     state: link
   when: not tmuxConf.stat.exists
 
+- name: Does compton.conf exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/compton.conf"
+  register: comptonConf
+
 - name: Create compton.conf symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/compton.conf"
     dest: "{{ lookup('env', 'HOME') }}/.config"
     state: link
   when: not comptonConf.stat.exists
+
+- name: Does nvim conf exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/nvim"
+  register: nvimConf
 
 - name: Create nvim symlink
   file:
@@ -73,9 +68,26 @@
     state: link
   when: not nvimConf.stat.exists
 
-- name: Create inti.lua symlink
+- name: Does init.lua for nvim exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/nvim/init.lua"
+  register: initLua
+
+- name: Create init.lua symlink
   file:
     src: "{{ lookup('env', 'HOME') }}/.dotfiles/nvim/luaConfig/init.lua"
     dest: "{{ lookup('env', 'HOME') }}/.config/nvim/"
     state: link
   when: not initLua.stat.exists
+
+- name: Does alacritty.yml exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/alacritty/alacritty.yml"
+  register: alacrittyYaml
+
+- name: Create alacritty.yml symlink
+  file:
+    src: "{{ lookup('env', 'HOME') }}/.dotfiles/alacritty.yaml"
+    dest: "{{ lookup('env', 'HOME') }}/.config/alacritty/"
+    state: link
+  when: not alacrittyYaml.stat.exists
