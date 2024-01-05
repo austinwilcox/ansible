@@ -14,4 +14,5 @@
   apt:
     name: [ "curl", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip" ]
     state: latest
+
 # Provide install instructions for alacritty

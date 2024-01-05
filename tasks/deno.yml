@@ -19,9 +19,3 @@
   command: "{{ lookup('env', 'HOME') }}/Downloads/install-deno.sh"
   args:
     creates: "{{ lookup('env', 'HOME') }}/.deno/bin/deno"  # Adjust the path for user Austin
-
-    #- name: Add Deno to PATH for user Austin
-    #lineinfile:
-    #path: "{{ lookup('env', 'HOME') }}/.bashrc"
-    #line: "export PATH='$PATH:{{ lookup('env', 'HOME') }}/.deno/bin'"  # Adjust the path for user Austin
-    #state: present
