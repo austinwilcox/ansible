@@ -15,10 +15,6 @@
       - update
       - setup
   tasks:
-    # - include: tasks/ssh.yml
-    #   tags:
-    #     - ssh
-    #     - git
     - include: tasks/basic.yml
       tags:
         - setup
@@ -26,6 +22,10 @@
       tags: 
         - setup
         - dotfiles
+    - include: tasks/ssh.yml
+      tags:
+        - ssh
+        - git
     - include: tasks/deno.yml
       tags:
         - deno
