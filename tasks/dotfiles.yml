@@ -123,7 +123,7 @@
 
 - name: Create alacritty.yml symlink
   file:
-    src: "{{ lookup('env', 'HOME') }}/.dotfiles/alacritty.yaml"
-    dest: "{{ lookup('env', 'HOME') }}/.config/alacritty/alacritty.yaml"
+    src: "{{ lookup('env', 'HOME') }}/.dotfiles/alacritty.yml"
+    dest: "{{ lookup('env', 'HOME') }}/.config/alacritty/alacritty.yml"
     state: link
   when: not alacrittyYaml.stat.exists
