@@ -44,6 +44,18 @@
     state: link
   when: not tmuxConf.stat.exists
 
+- name: Does .config folder exist
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config"
+  register: configFolder
+
+- name: Create .config folder
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.config"
+    state: directory
+    mode: '0755'
+  when: not configFolder.stat.exists
+
 - name: Does compton.conf exist
   stat:
     path: "{{ lookup('env', 'HOME') }}/.config/compton.conf"
