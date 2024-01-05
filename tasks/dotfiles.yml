@@ -111,7 +111,7 @@
 
 - name: Create alacritty folder
   file:
-    path: "{{ lookup('env', 'HOME') }}/.config/alacritty"
+    path: "{{ lookup('env', 'HOME') }}/.config/alacritty/"
     state: directory
     mode: '0755'
   when: not alacrittyFolder.stat.exists
