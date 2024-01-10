@@ -44,6 +44,7 @@
     - include: tasks/disconnected.yml
       tags: 
         - setup
+        - dsc
     - include: tasks/brave.yml
       tags: 
         - setup
