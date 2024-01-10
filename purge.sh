@@ -10,6 +10,7 @@ rm -rf ~/ZettelkastenV2
 rm ~/.ssh/github_rsa.pub
 rm ~/.ssh/github_rsa
 rm -rf ~/.deno
+rm -rf ~/.tmux/plugins/tpm
 
-sudo apt purge curl vim git ufw tmux fzf gimp xclip screenkey tldr ripgrep unzip -y
+sudo apt purge curl vim git ufw tmux fzf gimp xclip screenkey tldr ripgrep unzip build-essentials -y
 sudo apt autoremove -y

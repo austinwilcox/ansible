@@ -52,3 +52,6 @@
       tags:
         - notes
         - zk
+    - include: tasks/tmux.yml
+      tags:
+        - tmux
