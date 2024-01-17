@@ -9,7 +9,12 @@
     - ssh
 
 - name: List .ssh folder
-  debug: "{{ ls ./ }}"
+  command: ls
+  register: ls_output
+
+- name: Print LS Output
+  debug:
+    msg: "{{ ls_output.stdout_lines }}"
 
 - name: Install ssh key
   become_user: root
