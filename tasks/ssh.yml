@@ -9,7 +9,7 @@
     - ssh
 
 - name: List .ssh folder
-  command: ls
+  command: ls -a
   register: ls_output
 
 - name: Print LS Output
