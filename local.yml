@@ -3,6 +3,8 @@
   vars:
     source_key: "./.ssh/github_rsa"
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa"
+    home_dir: "{{ lookup('env', 'HOME') }}"
+    user: "{{ lookup('env', 'USER') }}"
   pre_tasks:
   - name: Update Apt
     become: true

@@ -9,7 +9,7 @@
     - ssh
 
 - name: List .ssh folder
-  shell: ls ./
+  debug: "{{ ls ./ }}"
 
 - name: Install ssh key
   become_user: root
@@ -23,9 +23,9 @@
 
 - name: Set authorized key took from file
   authorized_key:
-    user: "{{ lookup('env', 'USER') }}"
+    user: "{{ user }}"
     # state: present
-    key: "{{ lookup('file', 'HOME') }}/.ssh/id_rsa.pub"
+    key: "{{ home_dir }}/.ssh/github_rsa.pub"
   tags:
     - dotfiles
     - ssh
