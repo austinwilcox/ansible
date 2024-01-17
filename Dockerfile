@@ -23,4 +23,4 @@ WORKDIR /home/austin
 
 FROM usersetup
 COPY . .
-CMD ["sh", "-c", "./run-ansible.sh"]
+# CMD ["sh", "-c", "./run-ansible.sh"]
