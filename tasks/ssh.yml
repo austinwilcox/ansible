@@ -16,15 +16,15 @@
     mode: '0600'
   when: ssh_private_key is defined
 
-- name: Print Public Key
+- name: Print Public Key Path
   debug:
-    msg: "Public Key: {{ lookup('file', '{{ home_dir }}/.ssh/github_rsa.pub') }}"
+    msg: "Public Key Path: {{ home_dir }}/.ssh/github_rsa.pub"
   when: ssh_private_key is defined
 
 - name: Install Public Key
   authorized_key:
     user: "{{ user }}"
-    key: "{{ lookup('file', '{{ home_dir }}/.ssh/github_rsa.pub') }}"
+    key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
   when: ssh_private_key is defined
 
 # - name: Ensure .ssh directory exists.
