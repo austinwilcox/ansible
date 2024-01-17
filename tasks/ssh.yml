@@ -1,36 +1,65 @@
-- name: Ensure .ssh directory exists.
-  become_user: root
+- name: Ensure SSH directory exists
   file:
-    dest: "{{ dest_key | dirname }}"
-    mode: 0700
+    path: "{{ home_dir }}/.ssh"
     state: directory
-  tags:
-    - dotfiles
-    - ssh
+    mode: '0700'
 
-- name: List .ssh folder
-  command: ls .ssh -a
-  register: ls_output
-
-- name: Print LS Output
+- name: Install Encrypted SSH Private Key
   debug:
-    msg: "{{ ls_output.stdout_lines }}"
+    msg: "Installing encrypted SSH private key."
+  when: ssh_private_key is defined
 
-- name: Install ssh key
-  become_user: root
+- name: Copy SSH Private Key
   copy:
-    src: "{{ source_key }}"
-    dest: "{{ dest_key }}"
-    mode: 0600
-  tags:
-    - dotfiles
-    - ssh
+    content: "{{ ssh_private_key }}"
+    dest: "{{ home_dir }}/.ssh/github_rsa"
+    mode: '0600'
+  when: ssh_private_key is defined
 
-- name: Set authorized key took from file
+- name: Print Public Key
+  debug:
+    msg: "Public Key: {{ lookup('file', '{{ home_dir }}/.ssh/github_rsa.pub') }}"
+  when: ssh_private_key is defined
+
+- name: Install Public Key
   authorized_key:
     user: "{{ user }}"
-    # state: present
-    key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
-  tags:
-    - dotfiles
-    - ssh
+    key: "{{ lookup('file', '{{ home_dir }}/.ssh/github_rsa.pub') }}"
+  when: ssh_private_key is defined
+
+# - name: Ensure .ssh directory exists.
+#   become_user: root
+#   file:
+#     dest: "{{ dest_key | dirname }}"
+#     mode: 0700
+#     state: directory
+#   tags:
+#     - dotfiles
+#     - ssh
+
+# - name: List .ssh folder
+#   command: ls .ssh -a
+#   register: ls_output
+
+# - name: Print LS Output
+#   debug:
+#     msg: "{{ ls_output.stdout_lines }}"
+
+# - name: Install ssh key
+#   become_user: root
+#   copy:
+#     src: "{{ source_key }}"
+#     dest: "{{ dest_key }}"
+#     mode: 0600
+#   tags:
+#     - dotfiles
+#     - ssh
+
+# - name: Set authorized key took from file
+#   authorized_key:
+#     user: "{{ user }}"
+#     # state: present
+#     key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
+#   tags:
+#     - dotfiles
+#     - ssh
