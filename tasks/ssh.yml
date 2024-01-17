@@ -1,10 +1,11 @@
-- name: Ensure .ssh directory exists
+- name: Ensure .ssh directory exists.
   become_user: root
   file:
     dest: "{{ dest_key | dirname }}"
     mode: 0700
     state: directory
-  tags:   
+  tags:
+    - dotfiles
     - ssh
 
 - name: Install ssh key
@@ -14,31 +15,14 @@
     dest: "{{ dest_key }}"
     mode: 0600
   tags:
+    - dotfiles
     - ssh
 
-# - name: Install ssh key public
-#   become_user: root
-#   copy:
-#     src: "{{ source_key }}.pub"
-#     dest: "{{ dest_key }}.pub"
-#     mode: 0644
-
-- name: Set authorized keys from files
-  become_user: root
+- name: Set authorized key took from file
   authorized_key:
     user: "{{ lookup('env', 'USER') }}"
     state: present
-    key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa.pub"
-  # with_fileglob:
-  #   - "{{ lookup('env', 'HOME') }}/.ssh/github_rsa.pub"
+    key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
   tags:
+    - dotfiles
     - ssh
-
-# - name: Set authorized key took from file
-#   authorized_key:
-#     user: "{{ lookup('env', 'USER') }}"
-#     state: present
-#     key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
-#   tags:
-#     - dotfiles
-#     - ssh
