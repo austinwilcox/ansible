@@ -33,7 +33,9 @@
   authorized_key:
     user: "{{ user }}"
     state: present
-    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/github_rsa.pub') }}"
+    key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
+  with_fileglob:
+    - "{{ home_dir }}/.ssh/*.pub"
   tags:
     - dotfiles
     - ssh
