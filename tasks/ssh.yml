@@ -29,8 +29,8 @@
     user: "{{ lookup('env', 'USER') }}"
     state: present
     key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa.pub"
-  with_fileglob:
-    - "{{ lookup('env', 'HOME') }}/.ssh/github_rsa.pub"
+  # with_fileglob:
+  #   - "{{ lookup('env', 'HOME') }}/.ssh/github_rsa.pub"
   tags:
     - ssh
 
