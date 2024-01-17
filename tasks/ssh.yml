@@ -1,31 +1,60 @@
-- name: Ensure SSH directory exists
+- name: Ensure .ssh directory exists.
+  become_user: "{{ lookup('env', 'USER') }}"
   file:
-    path: "{{ home_dir }}/.ssh"
+    dest: "{{ home_dir }}/.ssh"
+    mode: 0700
     state: directory
-    mode: '0700'
+  tags:
+    - dotfiles
+    - ssh
 
-- name: Install Encrypted SSH Private Key
-  debug:
-    msg: "Installing encrypted SSH private key."
-  when: ssh_private_key is defined
-
-- name: Copy SSH Private Key
+- name: Install ssh key
+  become_user: "{{ user }}"
   copy:
-    content: "{{ ssh_private_key }}"
+    src: "./.ssh/github_rsa"
     dest: "{{ home_dir }}/.ssh/github_rsa"
-    mode: '0600'
-  when: ssh_private_key is defined
+    mode: 0600
+  tags:
+    - dotfiles
+    - ssh
 
-- name: Print Public Key Path
-  debug:
-    msg: "Public Key Path: {{ home_dir }}/.ssh/github_rsa.pub"
-  when: ssh_private_key is defined
-
-- name: Install Public Key
+- name: Set authorized key from file
   authorized_key:
     user: "{{ user }}"
-    key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
-  when: ssh_private_key is defined
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/github_rsa.pub') }}"
+  tags:
+    - dotfiles
+    - ssh
+
+# - name: Ensure SSH directory exists
+#   file:
+#     path: "{{ home_dir }}/.ssh"
+#     state: directory
+#     mode: '0700'
+
+# - name: Install Encrypted SSH Private Key
+#   debug:
+#     msg: "Installing encrypted SSH private key."
+#   when: ssh_private_key is defined
+
+# - name: Copy SSH Private Key
+#   copy:
+#     content: "{{ ssh_private_key }}"
+#     dest: "{{ home_dir }}/.ssh/github_rsa"
+#     mode: '0600'
+#   when: ssh_private_key is defined
+
+# - name: Print Public Key Path
+#   debug:
+#     msg: "Public Key Path: {{ home_dir }}/.ssh/github_rsa.pub"
+#   when: ssh_private_key is defined
+
+# - name: Install Public Key
+#   authorized_key:
+#     user: "{{ user }}"
+#     key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
+#   when: ssh_private_key is defined
 
 # - name: Ensure .ssh directory exists.
 #   become_user: root

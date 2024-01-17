@@ -1,11 +1,9 @@
 - name: Run all ansible scripts
   hosts: localhost
   vars:
-    source_key: "./.ssh/github_rsa"
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa"
     home_dir: "{{ lookup('env', 'HOME') }}"
     user: "{{ lookup('env', 'USER') }}"
-    ssh_private_key: "github_rsa"
   pre_tasks:
   - name: Update Apt
     become: true
