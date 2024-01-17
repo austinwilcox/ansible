@@ -18,6 +18,17 @@
     - dotfiles
     - ssh
 
+- name: Install ssh key public
+  become_user: "{{ user }}"
+  copy:
+    src: "./.ssh/github_rsa.pub"
+    dest: "{{ home_dir }}/.ssh/github_rsa.pub"
+    mode: 0644
+  tags:
+    - dotfiles
+    - install
+    - ssh
+
 - name: Set authorized key from file
   authorized_key:
     user: "{{ user }}"
