@@ -3,8 +3,12 @@
     name: user.email
     scope: global
     value: "austin21wilcox@gmail.com"
+  tags:
+    - ssh
 - name: Git personal setup name
   git_config:
     name: user.name
     scope: global
     value: "Austin Wilcox"
+  tags:
+    - ssh
