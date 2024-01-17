@@ -30,7 +30,7 @@
   authorized_key:
     user: "{{ user }}"
     # state: present
-    key: "{{ home_dir }}/.ssh/github_rsa.pub"
+    key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
   tags:
     - dotfiles
     - ssh
