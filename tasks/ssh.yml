@@ -8,6 +8,9 @@
     - dotfiles
     - ssh
 
+- name: List .ssh folder
+  shell: ls ./
+
 - name: Install ssh key
   become_user: root
   copy:
@@ -21,8 +24,8 @@
 - name: Set authorized key took from file
   authorized_key:
     user: "{{ lookup('env', 'USER') }}"
-    state: present
-    key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
+    # state: present
+    key: "{{ lookup('file', 'HOME') }}/.ssh/id_rsa.pub"
   tags:
     - dotfiles
     - ssh
