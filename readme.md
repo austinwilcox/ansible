@@ -2,7 +2,7 @@
 This will install all the files found with the tasks folder.
 
 ```bash
-ansible-playbook local.yml --ask-become-pass
+ansible-playbook local.yml --ask-become-pass --ask-vault-pass
 ```
 
 ## TODO
