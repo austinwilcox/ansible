@@ -56,3 +56,6 @@
     - include: tasks/tmux.yml
       tags:
         - tmux
+    - include: tasks/nvim.yml
+      tags:
+        - neovim

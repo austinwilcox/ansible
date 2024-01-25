@@ -21,15 +21,3 @@
   tags:
     - install
     - neovim
-- name: Neovim Plugin Development 1
-  become: true
-  apt: name=luarocks
-  tags:
-    - install
-    - neovim
-- name: Neovim Plugin Development 2 luacheck
-  become: true
-  shell: luarocks install luacheck
-  tags:
-    - install
-    - neovim
