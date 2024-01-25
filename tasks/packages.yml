@@ -8,4 +8,4 @@
     name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "build-essential" ]
     state: latest
 
-# Provide install instructions for alacritty
+# TODO: Provide install instructions for alacritty

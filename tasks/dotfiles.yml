@@ -1,134 +1,28 @@
 - name: Do dotfiles already exist
   stat:
-    path: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    path: "{{ home_dir }}/.dotfiles"
   register: dotfiles
 
-- name: Print message to alert that dotfiles DO NOT exist
-  debug:
-    msg: "dotfiles not found, at {{ lookup('env', 'HOME') }}/.dotfiles pulling from github"
-  when: not dotfiles.stat.exists
-
-- name: Print message to alert that dotfiles DO exist
-  debug:
-    msg: "dotfiles found, Should I delete the existing ones or not?"
-  when: dotfiles.stat.exists and dotfiles.stat.isdir
-
-- name: If dotfiles DO NOT exist
+- name: Clone dotfiles if they DO NOT exist
   ansible.builtin.git:
-    repo: 'https://github.com/austinwilcox/dotfiles'
-    dest: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    repo: 'git@github.com:austinwilcox/dotfiles.git'
+    dest: "{{ home_dir }}/.dotfiles"
     version: master
   when: not dotfiles.stat.exists
 
+- name: Stow dotfiles
+  shell: cd $HOME/.dotfiles && stow .
+  tags:
+    - dotfiles
+    - stow
+
 - name: Install eza
-  #TODO: This does not work right now
-  shell: command -v cargo install eza
+  shell: cargo install eza
   ignore_errors: yes
-  
-- name: Does bashrc exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.bashrc"
-  register: bashrc
+  tags: 
+    - ls
+    - eza
 
-- name: Create .bashrc symlink
-  file:
-    src: "{{ lookup('env', 'HOME') }}/.dotfiles/.bashrc"
-    dest: "{{ lookup('env', 'HOME') }}/.bashrc"
-    state: link
-  when: not bashrc.stat.exists
-
-- name: Does .tmux.conf exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.tmux.conf"
-  register: tmuxConf
-
-- name: Create .tmux.conf symlink
-  file:
-    src: "{{ lookup('env', 'HOME') }}/.dotfiles/.tmux.conf"
-    dest: "{{ lookup('env', 'HOME') }}/.tmux.conf"
-    state: link
-  when: not tmuxConf.stat.exists
-
-- name: Does .config folder exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config"
-  register: configFolder
-
-- name: Create .config folder
-  file:
-    path: "{{ lookup('env', 'HOME') }}/.config"
-    state: directory
-    mode: '0755'
-  when: not configFolder.stat.exists
-
-- name: Does compton.conf exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/compton.conf"
-  register: comptonConf
-
-- name: Create compton.conf symlink
-  file:
-    src: "{{ lookup('env', 'HOME') }}/.dotfiles/compton.conf"
-    dest: "{{ lookup('env', 'HOME') }}/.config/compton.conf"
-    state: link
-  when: not comptonConf.stat.exists
-
-- name: Does nvim directory exist in .config
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/nvim"
-  register: nvimDir
-
-- name: Create nvim directory
-  file:
-    path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
-    state: directory
-    mode: '0755'
-  when: not nvimDir.stat.exists
-
-- name: Does nvim conf exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/nvim/lua"
-  register: nvimConf
-
-- name: Create nvim symlink
-  file:
-    src: "{{ lookup('env', 'HOME') }}/.dotfiles/nvim/luaConfig/lua"
-    dest: "{{ lookup('env', 'HOME') }}/.config/nvim/lua"
-    state: link
-  when: not nvimConf.stat.exists
-
-- name: Does init.lua for nvim exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/nvim/init.lua"
-  register: initLua
-
-- name: Create init.lua symlink
-  file:
-    src: "{{ lookup('env', 'HOME') }}/.dotfiles/nvim/luaConfig/init.lua"
-    dest: "{{ lookup('env', 'HOME') }}/.config/nvim/init.lua"
-    state: link
-  when: not initLua.stat.exists
-
-- name: Does alacritty folder exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/alacritty"
-  register: alacrittyFolder
-
-- name: Create alacritty folder
-  file:
-    path: "{{ lookup('env', 'HOME') }}/.config/alacritty/"
-    state: directory
-    mode: '0755'
-  when: not alacrittyFolder.stat.exists
-
-- name: Does alacritty.yml exist
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.config/alacritty/alacritty.yml"
-  register: alacrittyYaml
-
-- name: Create alacritty.yml symlink
-  file:
-    src: "{{ lookup('env', 'HOME') }}/.dotfiles/alacritty.yml"
-    dest: "{{ lookup('env', 'HOME') }}/.config/alacritty/alacritty.yml"
-    state: link
-  when: not alacrittyYaml.stat.exists
+- name: Install alacritty
+  shell: cargo install alacritty
+  ignore_errors: yes

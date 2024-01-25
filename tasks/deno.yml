@@ -1,21 +1,21 @@
 - name: Check if Downloads folder exists
   stat:
-    path: "{{ lookup('env', 'HOME') }}/Downloads"
+    path: "{{ home_dir }}/Downloads"
   register: downloads_folder
 
 - name: Create Downloads folder if it doesn't exist
   file:
-    path: "{{ lookup('env', 'HOME') }}/Downloads"
+    path: "{{ home_dir }}/Downloads"
     state: directory
   when: not downloads_folder.stat.exists
 
 - name: Download Deno binary
   get_url:
     url: https://deno.land/x/install/install.sh
-    dest: "{{ lookup('env', 'HOME') }}/Downloads/install-deno.sh"
+    dest: "{{ home_dir }}/Downloads/install-deno.sh"
     mode: '+x'  # Make the script executable
 
 - name: Run Deno installer script for user Austin
-  command: "{{ lookup('env', 'HOME') }}/Downloads/install-deno.sh"
+  command: "{{ home_dir }}/Downloads/install-deno.sh"
   args:
-    creates: "{{ lookup('env', 'HOME') }}/.deno/bin/deno"  # Adjust the path for user Austin
+    creates: "{{ home_dir }}/.deno/bin/deno"

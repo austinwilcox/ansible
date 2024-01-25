@@ -1,15 +1,15 @@
 - name: Remove Disconnected
-  shell: rm -rf "{{ lookup('env', 'HOME') }}/Software/tools/disconnected"
+  shell: rm -rf "{{ home_dir }}/disconnected"
 
 - name: Pull Disconnected
   ansible.builtin.git:
     repo: 'https://github.com/austinwilcox/disconnected'
-    dest: "{{ lookup('env', 'HOME') }}/Software/tools/disconnected"
+    dest: "{{ home_dir }}/disconnected"
     version: master
 
 - name: Compile and deploy command
-  shell: "cd {{ lookup('env', 'HOME') }}/Software/tools/disconnected && {{ lookup('env', 'HOME') }}/.deno/bin/deno compile --allow-read --allow-env --allow-write --allow-run --output disconnected index.ts"
+  shell: "cd {{ home_dir }}disconnected && {{ home_dir }}/.deno/bin/deno compile --allow-read --allow-env --allow-write --allow-run --output disconnected index.ts"
 
 - name: Move disconnected to /usr/local/bin
   become: yes
-  shell: "cd {{ lookup('env', 'HOME') }}/Software/tools/disconnected && cp disconnected /usr/local/bin"
+  shell: "cd {{ home_dir }}/disconnected && cp disconnected /usr/local/bin"

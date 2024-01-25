@@ -1,7 +1,6 @@
 - name: Run all ansible scripts
   hosts: localhost
   vars:
-    dest_key: "{{ lookup('env', 'HOME') }}/.ssh/github_rsa"
     home_dir: "{{ lookup('env', 'HOME') }}"
     user: "{{ lookup('env', 'USER') }}"
   pre_tasks:
@@ -16,9 +15,6 @@
       - update
       - setup
   tasks:
-    - include: tasks/basic.yml
-      tags:
-        - setup
     - include: tasks/packages.yml
       tags: 
         - setup
@@ -37,6 +33,10 @@
       tags:
         - setup
         - dotfiles
+    - include: tasks/nvim.yml
+      tags:
+        - neovim
+        - nvim
     - include: tasks/deno.yml
       tags:
         - deno
@@ -56,6 +56,3 @@
     - include: tasks/tmux.yml
       tags:
         - tmux
-    - include: tasks/nvim.yml
-      tags:
-        - neovim

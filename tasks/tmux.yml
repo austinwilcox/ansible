@@ -1,8 +1,8 @@
 - name: Install tpm
   ansible.builtin.git:
     repo: 'https://github.com/tmux-plugins/tpm'
-    dest: "{{ lookup('env', 'HOME') }}/.tmux/plugins/tpm"
+    dest: "{{ home_dir }}/.tmux/plugins/tpm"
     version: master
 
 - name: Source tmux
-  shell: "tmux source {{ lookup('env', 'HOME') }}/.tmux.conf"
+  shell: "tmux source {{ home_dir }}/.tmux.conf"
