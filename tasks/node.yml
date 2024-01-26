@@ -1,0 +1,14 @@
+- name: Install Volta
+  shell: curl https://get.volta.sh | bash
+  tags:
+    - node
+
+- name: Refresh Bash
+  shell: "exec bash"  # Restart the Bash shell session
+  args:
+    executable: /bin/bash
+
+- name: Install Node with Volta
+  shell: volta install node
+  tags:
+    - node
