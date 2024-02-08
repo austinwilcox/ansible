@@ -14,7 +14,7 @@
   homebrew:
     name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "brave" ]
     state: latest
-  when: is_mac.stat.exists
+  when: is_brew_installed.stat.exists
 
 - name: Install Packages on Windows
   win_chocolatey:

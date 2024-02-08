@@ -10,7 +10,7 @@
       path: /usr/local/Homebrew/bin/brew
     tags:
       - os
-    register: is_mac
+    register: is_brew_installed
   - name: Update Apt
     become: true
     apt:
@@ -83,4 +83,4 @@
       tags:
         - os
       debug:
-        msg: "Package Manager {{ ansible_pkg_mgr }} - {{ 'brew installed' if is_mac.stat.exists else 'brew not installed' }} - {{ ansible_system }}"
+        msg: "Package Manager {{ ansible_pkg_mgr }} - {{ 'brew installed' if is_brew_installed.stat.exists else 'brew not installed' }} - {{ ansible_system }}"
