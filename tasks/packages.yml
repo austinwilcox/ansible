@@ -10,7 +10,7 @@
   apt:
     name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "build-essential" ]
     state: latest
-  when: ansible_pkg_mgr == "apt"
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
 
 - name: Install Packages on Darwin
   become: true
