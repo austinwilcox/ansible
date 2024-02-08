@@ -12,8 +12,14 @@
 - name: Install Packages on Darwin
   become: true
   homebrew:
-    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip" ]
+    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "brave" ]
     state: latest
   when: is_mac.stat.exists
+
+- name: Install Packages on Windows
+  win_chocolatey:
+    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "brave" ]
+    state: latest
+  when: ansible_system == "Windows"
 
 # TODO: Provide install instructions for alacritty
