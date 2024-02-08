@@ -12,3 +12,4 @@ ansible-playbook local.yml --ask-become-pass --ask-vault-pass
 ansible-playbook local.yml --ask-become-pass --tags js
 ansible-playbook local.yml --ask-become-pass --skip-tags js
 ```
+- [ ] Get everything working with Windows, Mac, and Linux based machines. Starting with Brew, Chocolatey and apt
