@@ -1,6 +1,9 @@
-# - name: Update packages
-#   apt:
-#     upgrade: 'yes'
+- name: Install Homebrew
+  become: yes
+  command: "/bin/bash -c '{{ url }}'"
+  vars:
+    url: "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+  when: ansible_system == "Darwin"
 
 - name: Install packages on Linux
   become: true 
