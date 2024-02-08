@@ -21,6 +21,7 @@
       - install
       - update
       - setup
+    when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
   tasks:
     - include: tasks/packages.yml
       tags: 
@@ -53,6 +54,7 @@
       tags: 
         - setup
         - dsc
+      when: ansible_system == "Linux" or ansible_sytem == "Darwin"
     - include: tasks/brave.yml
       tags: 
         - setup
@@ -81,4 +83,4 @@
       tags:
         - os
       debug:
-        msg: "Package Manager {{ ansible_pkg_mgr }} - {{ 'brew installed' if is_mac.stat.exists else 'brew not installed' }}"
+        msg: "Package Manager {{ ansible_pkg_mgr }} - {{ 'brew installed' if is_mac.stat.exists else 'brew not installed' }} - {{ ansible_system }}"
