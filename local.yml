@@ -1,9 +1,16 @@
 - name: Run all ansible scripts
   hosts: localhost
+  gather_facts: true
   vars:
     home_dir: "{{ lookup('env', 'HOME') }}"
     user: "{{ lookup('env', 'USER') }}"
   pre_tasks:
+  - name: Detect if I am on a mac
+    stat:
+      path: /usr/local/Homebrew/bin/brew
+    tags:
+      - os
+    register: is_mac
   - name: Update Apt
     become: true
     apt:
@@ -59,3 +66,19 @@
     - include: tasks/node.yml
       tags:
         - node
+    - name: Print OS
+      tags:
+        - os
+      debug:
+        msg: "The OS is {{ ansible_facts['distribution'] }}"
+    - name: Test Ubuntu
+      tags:
+        - os
+      debug:
+        msg: "This should print on ubuntu, and nowhere else"
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Package Manager
+      tags:
+        - os
+      debug:
+        msg: "Package Manager {{ ansible_pkg_mgr }} - {{ 'brew installed' if is_mac.stat.exists else 'brew not installed' }}"
