@@ -16,6 +16,13 @@
     - dotfiles
     - stow
 
+#This might not be needed, need to test though
+- name: Stow Obsidian Vimrc 
+  shell: cd $HOME/.dotfiles && stow Zettelkasten-V2 -t ~/Zettelkasten-v2
+  tags:
+    - zettelkasten
+    - zk
+
 - name: Install eza
   shell: cargo install eza
   ignore_errors: yes
