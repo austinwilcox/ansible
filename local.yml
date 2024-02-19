@@ -37,6 +37,10 @@
       tags:
         - ssh
         - git
+    - include: tasks/zettelkasten.yml
+      tags:
+        - notes
+        - zk
     - include: tasks/dotfiles.yml
       tags:
         - setup
@@ -58,10 +62,6 @@
     - include: tasks/brave.yml
       tags: 
         - setup
-    - include: tasks/zettelkasten.yml
-      tags:
-        - notes
-        - zk
     - include: tasks/tmux.yml
       tags:
         - tmux
