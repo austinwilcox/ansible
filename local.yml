@@ -63,3 +63,6 @@
     - name: Test
       ansible.builtin.include_tasks:
         file:  tasks/node.yml
+    - name: Install Logseq
+      ansible.builtin.include_tasks: 
+        file: tasks/logseq.yml

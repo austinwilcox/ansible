@@ -46,18 +46,29 @@
     repo: 'https://github.com/alacritty/alacritty.git'
     dest: "{{ home_dir }}/alacritty"
     version: master
+  ignore_errors: yes
 
 - name: Build Alacritty
   shell: cd "{{ home_dir }}"/alacritty && cargo build --release && sudo cp target/release/alacritty /usr/local/bin && sudo cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg && sudo desktop-file-install extra/linux/Alacritty.desktop && sudo update-desktop-database
+  ignore_errors: yes
   
 # Does not work this way because of a prompt to ask for a y from stdin
 # - name: Install Starship
 #   shell: curl -sS https://starship.rs/install.sh | sh
 #   ignore_errors: yes
 
-- name: Install Starship
-  shell: curl -sS https://starship.rs/install.sh | sh
-  ignore_errors: yes
+#TODO: Need to fix this up still
+# - name: Install Starship
+#   ansible.builtin.expect:
+#     command: curl -sS https://starship.rs/install.sh | sh
+#     responses:
+#       Question:
+#       ".*": "y"
+#   ignore_errors: yes
+
+# - name: Install Starship
+#   shell: curl -sS https://starship.rs/install.sh | sh
+#   ignore_errors: yes
 
 - name: Download Nerdfonts
   ansible.builtin.git:

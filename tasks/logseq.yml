@@ -1,0 +1,34 @@
+- name: Install Dependencies
+  become: yes
+  apt:
+    name: [ "libfuse2" ]
+  tags:
+    - logseq
+
+- name: Fix AppImages on 24.04
+  become: yes
+  shell: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+  tags:
+    - logseq
+
+- name: Logseq
+  shell: wget https://github.com/logseq/logseq/releases/download/0.10.9/Logseq-linux-x64-0.10.9.AppImage
+  args:
+    chdir: "{{ home_dir }}/Downloads"
+  tags:
+    - logseq
+
+- name: Make Logseq executable
+  shell: chmod +x Logseq-linux-x64-0.10.9.AppImage
+  args:
+    chdir: "{{ home_dir }}/Downloads"
+  tags:
+    - logseq
+
+- name: Move Logseq to usr/local/bin
+  become: true
+  shell: cp Logseq-linux-x64-0.10.9.AppImage /usr/local/bin/Logseq
+  args:
+    chdir: "{{ home_dir }}/Downloads"
+  tags:
+    - logseq

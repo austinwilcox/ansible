@@ -43,3 +43,7 @@
 
 - name: eval ssh agent
   shell: eval "$(ssh-agent -s)"
+
+- name: Enable SSH connection
+  become: yes
+  shell: ufw allow ssh
