@@ -1,0 +1,76 @@
+- name: Check if leftwm is already installed
+  stat:
+    path: "/usr/share/xsessions/leftwm.desktop"
+  register: leftwm
+  tags: leftwm
+
+- name: Clone leftwm
+  ansible.builtin.git:
+    repo: 'https://github.com/leftwm/leftwm.git'
+    dest: "{{ home_dir }}/Software/leftwm"
+    version: main
+  tags: leftwm
+  when: not leftwm.stat.exists
+
+- name: Build Leftwm
+  shell: cargo build --profile optimized
+  args:
+    chdir: "{{ home_dir }}/Software/leftwm"
+  tags: leftwm
+  when: not leftwm.stat.exists
+
+- name: Copy leftwm executables to /usr/bin
+  become: yes
+  shell: install -s -Dm755 ./target/optimized/leftwm ./target/optimized/leftwm-worker ./target/optimized/lefthk-worker ./target/optimized/leftwm-state ./target/optimized/leftwm-check ./target/optimized/leftwm-command -t /usr/bin
+  args:
+    chdir: "{{ home_dir }}/Software/leftwm"
+  tags: leftwm
+  when: not leftwm.stat.exists
+
+- name: Copy leftwm.desktop to xsessions
+  become: yes
+  shell: cp leftwm.desktop /usr/share/xsessions/
+  args:
+    chdir: "{{ home_dir }}/Software/leftwm"
+  tags: leftwm
+  when: not leftwm.stat.exists
+
+- name: Clone leftwm-theme
+  ansible.builtin.git:
+    repo: 'https://github.com/leftwm/leftwm-theme.git'
+    dest: "{{ home_dir }}/Software/leftwm-theme"
+    version: master
+  tags: leftwm
+
+- name: Build Leftwm-theme
+  shell: cargo build --release
+  args:
+    chdir: "{{ home_dir }}/Software/leftwm-theme"
+  tags: leftwm
+
+- name: Copy leftwm-theme executables to /usr/bin
+  become: yes
+  shell: sudo install -s -Dm755 ./target/release/leftwm-theme -t /usr/bin
+  args:
+    chdir: "{{ home_dir }}/Software/leftwm-theme"
+  tags: leftwm
+
+- name: Update themes
+  shell: leftwm-theme update
+  tags: leftwm
+
+- name: Install a theme
+  shell: leftwm-theme install Ascent
+  tags: leftwm
+
+- name: Apply the Ascent Theme
+  shell: leftwm-theme apply Ascent
+  tags: leftwm
+
+- name: Install dependent packages for leftwm
+  become: true 
+  apt:
+    name: [ "feh", "compton", "polybar", "rofi" ]
+    state: latest
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: leftwm

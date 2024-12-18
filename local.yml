@@ -26,21 +26,27 @@
     - name: Install Packages
       ansible.builtin.include_tasks:
         file:  tasks/packages.yml
+
     - name: Install Rust
       ansible.builtin.include_tasks:
         file:  tasks/rust.yml
+
     - name: Setup git
       ansible.builtin.include_tasks:
         file:  tasks/git-setup.yml
-    - name: Setup ssh?
+
+    - name: Setup git ssh and openssh server
       ansible.builtin.include_tasks:
         file:  tasks/ssh.yml
+
     - name: Setup zettelkasten
       ansible.builtin.include_tasks:
         file:  tasks/zettelkasten.yml
+
     - name: Setup dotfiles
       ansible.builtin.include_tasks:
         file:  tasks/dotfiles.yml
+
     - name: Install Neovim
       ansible.builtin.include_tasks: 
         file: tasks/nvim.yml
@@ -48,21 +54,37 @@
           tags:
             - neovim
             - nvim
+
     - name: Install Deno
       ansible.builtin.include_tasks:
         file:  tasks/deno.yml
+
     - name: Install Disconnected
       ansible.builtin.include_tasks:
         file:  tasks/disconnected.yml
-    - name: Test
+
+    - name: Install Brave
       ansible.builtin.include_tasks:
         file:  tasks/brave.yml
-    - name: Test
+
+    - name: Install Tmux and set up TPM
       ansible.builtin.include_tasks:
         file:  tasks/tmux.yml
-    - name: Test
+
+    - name: Install Node
       ansible.builtin.include_tasks:
         file:  tasks/node.yml
+
     - name: Install Logseq
       ansible.builtin.include_tasks: 
         file: tasks/logseq.yml
+
+    - name: Install Leftwm
+      ansible.builtin.include_tasks: 
+        file: tasks/leftwm.yml
+      tags: leftwm
+      
+    # - name: Install Awesome
+    #   ansible.builtin.include_tasks: 
+    #     file: tasks/awesome.yml
+    #   tags: awesome

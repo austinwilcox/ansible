@@ -1,0 +1,7 @@
+- name: Install Awesome WM
+  become: true
+  apt:
+    name: ["awesome", "awesome-extra"]
+  tags:
+    - awesome
+    - twm
