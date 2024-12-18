@@ -4,5 +4,5 @@
     dest: "{{ home_dir }}/.tmux/plugins/tpm"
     version: master
 
-- name: Source tmux
-  shell: "tmux source {{ home_dir }}/.tmux.conf"
+# - name: Source tmux
+#   shell: "tmux source {{ home_dir }}/.tmux.conf"

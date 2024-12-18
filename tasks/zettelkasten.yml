@@ -1,5 +1,5 @@
 - name: Zettelkasten
   ansible.builtin.git:
-    repo: 'git@github.com/austinwilcox/zettelkasten-V2'
-    dest: "{{ home_dir }}/ZettelkastenV2"
-    version: master
+    repo: 'git@github.com:austinwilcox/Zettelkasten-v2.git'
+    dest: "{{ home_dir }}/Zettelkasten-V2"
+    version: main

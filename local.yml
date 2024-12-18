@@ -23,34 +23,24 @@
       - setup
     when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
   tasks:
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/packages.yml
-    #     tags: 
-    #       - setup
-    #       - dotfiles
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/rust.yml
-    #     tags:
-    #       - rust
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/git-setup.yml
-    #     tags:
-    #       - setup
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/ssh.yml
-    #     tags:
-    #       - ssh
-    #       - git
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/zettelkasten.yml
-    #     tags:
-    #       - notes
-    #       - zk
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/dotfiles.yml
-    #     tags:
-    #       - setup
-    #       - dotfiles
+    - name: Install Packages
+      ansible.builtin.include_tasks:
+        file:  tasks/packages.yml
+    - name: Install Rust
+      ansible.builtin.include_tasks:
+        file:  tasks/rust.yml
+    - name: Setup git
+      ansible.builtin.include_tasks:
+        file:  tasks/git-setup.yml
+    - name: Setup ssh?
+      ansible.builtin.include_tasks:
+        file:  tasks/ssh.yml
+    - name: Setup zettelkasten
+      ansible.builtin.include_tasks:
+        file:  tasks/zettelkasten.yml
+    - name: Setup dotfiles
+      ansible.builtin.include_tasks:
+        file:  tasks/dotfiles.yml
     - name: Install Neovim
       ansible.builtin.include_tasks: 
         file: tasks/nvim.yml
@@ -58,43 +48,18 @@
           tags:
             - neovim
             - nvim
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/deno.yml
-    #     tags:
-    #       - deno
-    #       - ts
-    #       - js
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/disconnected.yml
-    #     tags: 
-    #       - setup
-    #       - dsc
-    #   when: ansible_system == "Linux" or ansible_sytem == "Darwin"
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/brave.yml
-    #     tags: 
-    #       - setup
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/tmux.yml
-    #     tags:
-    #       - tmux
-    # - ansible.builtin.include_tasks:
-    #     file:  tasks/node.yml
-    #     tags:
-    #       - node
-    - name: Print OS
-      tags:
-        - os
-      debug:
-        msg: "The OS is {{ ansible_facts['distribution'] }}"
-    - name: Test Ubuntu
-      tags:
-        - os
-      debug:
-        msg: "This should print on ubuntu, and nowhere else"
-      when: ansible_facts['distribution'] == "Ubuntu"
-    - name: Package Manager
-      tags:
-        - os
-      debug:
-        msg: "Package Manager {{ ansible_pkg_mgr }} - {{ 'brew installed' if is_brew_installed.stat.exists else 'brew not installed' }} - {{ ansible_system }}"
+    - name: Install Deno
+      ansible.builtin.include_tasks:
+        file:  tasks/deno.yml
+    - name: Install Disconnected
+      ansible.builtin.include_tasks:
+        file:  tasks/disconnected.yml
+    - name: Test
+      ansible.builtin.include_tasks:
+        file:  tasks/brave.yml
+    - name: Test
+      ansible.builtin.include_tasks:
+        file:  tasks/tmux.yml
+    - name: Test
+      ansible.builtin.include_tasks:
+        file:  tasks/node.yml

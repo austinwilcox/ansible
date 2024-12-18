@@ -38,8 +38,8 @@
     - dotfiles
     - ssh
 
-- name: eval ssh agent
-  shell: eval "$(ssh-agent -s)"
-
 - name: add ssh key
   shell: ssh-add ~/.ssh/github_rsa
+
+- name: eval ssh agent
+  shell: eval "$(ssh-agent -s)"

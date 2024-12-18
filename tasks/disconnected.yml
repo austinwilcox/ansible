@@ -8,7 +8,7 @@
     version: master
 
 - name: Compile and deploy command
-  shell: "cd {{ home_dir }}disconnected && {{ home_dir }}/.deno/bin/deno compile --allow-read --allow-env --allow-write --allow-run --output disconnected index.ts"
+  shell: "cd {{ home_dir }}/disconnected && {{ home_dir }}/.deno/bin/deno compile --allow-read --allow-env --allow-write --allow-run --output disconnected index.ts"
 
 - name: Move disconnected to /usr/local/bin
   become: yes

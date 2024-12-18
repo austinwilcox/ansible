@@ -3,21 +3,28 @@
   tags:
     - install
     - neovim
+- name: Install packages on Linux
+  become: true 
+  apt:
+    name: ["make", "cmake", "autoconf", "automake", "g++", "libtool", "libtool-bin", "ninja-build", "pkg-config", "unzip", "gettext" ]
+    state: latest
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
 - name: Clone Neovim
   ansible.builtin.git:
     repo: 'https://github.com/neovim/neovim.git'
     dest: "{{ home_dir }}/neovim"
+    version: "8b98642"
   tags:
     - install
     - neovim
 - name: Build neovim
-  shell: "cd {{ home_dir }}/neovim && make -j 20"
+  shell: "cd {{ home_dir }}/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo"
   tags:
     - install
     - neovim
 - name: Install neovim
   become: true
-  shell: "cd {{ home_dir }}/neovim && make install"
+  shell: "cd {{ home_dir }}/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo && make install"
   tags:
     - install
     - neovim

@@ -2,6 +2,10 @@
   stat:
     path: "{{ home_dir }}/.dotfiles"
   register: dotfiles
+- name: Does a bashrc already exist
+  stat:
+    path: "{{ home_dir }}/.bashrc"
+  register: bashrc
 
 - name: Clone dotfiles if they DO NOT exist
   ansible.builtin.git:
@@ -9,6 +13,10 @@
     dest: "{{ home_dir }}/.dotfiles"
     version: master
   when: not dotfiles.stat.exists
+
+- name: Remove bashrc if it exists
+  shell: rm ~/.bashrc
+  when: bashrc.stat.exists
 
 - name: Stow dotfiles
   shell: cd $HOME/.dotfiles && stow .
@@ -18,7 +26,7 @@
 
 #This might not be needed, need to test though
 - name: Stow Obsidian Vimrc 
-  shell: cd $HOME/.dotfiles && stow Zettelkasten-V2 -t ~/Zettelkasten-v2
+  shell: cd $HOME/.dotfiles && stow Zettelkasten-V2 -t ~/Zettelkasten-V2
   tags:
     - zettelkasten
     - zk
@@ -33,3 +41,22 @@
 - name: Install alacritty
   shell: cargo install alacritty
   ignore_errors: yes
+
+# Does not work this way because of a prompt to ask for a y from stdin
+# - name: Install Starship
+#   shell: curl -sS https://starship.rs/install.sh | sh
+#   ignore_errors: yes
+
+- name: Install Starship
+  shell: curl -sS https://starship.rs/install.sh | sh
+  ignore_errors: yes
+
+- name: Download Nerdfonts
+  ansible.builtin.git:
+    repo: 'https://github.com/ryanoasis/nerd-fonts.git'
+    depth: 1
+    dest: "{{ home_dir }}/nerd-fonts"
+    version: master
+
+- name: Install UbuntuMono
+  shell: cd "{{ home_dir }}"/nerd-fonts && ./install.sh UbuntuMono
