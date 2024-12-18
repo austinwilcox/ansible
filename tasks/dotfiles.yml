@@ -79,3 +79,15 @@
 
 - name: Install UbuntuMono
   shell: cd "{{ home_dir }}"/nerd-fonts && ./install.sh UbuntuMono
+
+  # Run a check if grep -Fxq "kmonad" /etc/crontab is found, which this will return 0 if found, and 1 if not
+
+- name: Check if kmonad is in my crontab
+  shell: grep "kmonad" /etc/crontab
+  ignore_errors: yes
+  register: kmonad_grep
+
+- name: Add kmonad to crontab
+  become: true
+  shell: echo "@reboot root /home/austin/kmonad/kmonad /home/austin/kmonad/kmonad-layouts/colemak-dh-extend-ansi.kbd" >> /etc/crontab
+  when: kmonad_grep is not failed
