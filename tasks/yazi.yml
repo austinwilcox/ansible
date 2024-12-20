@@ -1,0 +1,5 @@
+#Expects an input of y, need to use the builtin_expect or whatever that api is
+- name: Install yazi
+  shell: cargo install --locked yazi-fm yazi-cli
+  ignore_errors: yes
+  tags: yazi

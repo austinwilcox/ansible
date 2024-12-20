@@ -10,6 +10,7 @@
       path: /usr/local/Homebrew/bin/brew
     tags:
       - os
+      - packages
     register: is_brew_installed
   - name: Update Apt
     become: true
@@ -21,11 +22,13 @@
       - install
       - update
       - setup
+      - packages
     when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
   tasks:
     - name: Install Packages
       ansible.builtin.include_tasks:
         file:  tasks/packages.yml
+      tags: packages
 
     - name: Install Rust
       ansible.builtin.include_tasks:
@@ -83,6 +86,11 @@
       ansible.builtin.include_tasks: 
         file: tasks/leftwm.yml
       tags: leftwm
+
+    - name: Install Yazi
+      ansible.builtin.include_tasks:
+        file:  tasks/yazi.yml
+      tags: yazi
       
     # - name: Install Awesome
     #   ansible.builtin.include_tasks: 
