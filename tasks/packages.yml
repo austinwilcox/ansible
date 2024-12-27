@@ -9,7 +9,7 @@
 - name: Install packages on Linux
   become: true 
   apt:
-    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "build-essential", "make", "ssh", "cmake", "neofetch", "libfreetype6-dev", "libfontconfig1-dev", "libxcb-xfixes0-dev", "libxkbcommon-dev", "python3", "openssh-server", "thunar", "pavucontrol", "virt-manager", "libreoffice", "podman", "peek", "filezilla", "flameshot" ]
+    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "build-essential", "make", "ssh", "cmake", "neofetch", "libfreetype6-dev", "libfontconfig1-dev", "libxcb-xfixes0-dev", "libxkbcommon-dev", "python3", "openssh-server", "thunar", "pavucontrol", "virt-manager", "libreoffice", "podman", "peek", "filezilla", "flameshot", "lxappearance" ]
     state: latest
   when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
   tags: packages
