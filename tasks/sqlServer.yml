@@ -1,0 +1,22 @@
+- name: Download sql server container
+  shell: podman pull mcr.microsoft.com/mssql/server:2019-latest
+  tags: sqlserver
+
+- name: Create location for sql server data to sit
+  become: yes
+  shell: mkdir /var/mssql
+  tags: sqlserver
+
+- name: Create data
+  become: yes
+  shell: touch /var/mssql/data
+  tags: sqlserver
+
+- name: Chmod 755 data
+  become: yes
+  shell: chmod 755 -R /var/mssql/data
+  tags: sqlserver
+
+- name: Create pod
+  shell: podman run -d -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD={{sql_server_password}}' --name {{sql_server_pod_name}} -p 1460:1433 -v /var/mssql/data:/var/mssql/data:Z mcr.microsoft.com/mssql/server:2019-latest
+  tags: sqlserver

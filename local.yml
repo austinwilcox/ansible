@@ -91,6 +91,13 @@
       ansible.builtin.include_tasks:
         file:  tasks/yazi.yml
       tags: yazi
+
+    - name: Install Sql Server with Podman
+      ansible.builtin.include_tasks:
+        file:  tasks/sqlServer.yml
+      tags: 
+        - never
+        - sqlserver
       
     # - name: Install Awesome
     #   ansible.builtin.include_tasks: 
