@@ -25,7 +25,7 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#installation">Running</a></li>
       </ul>
     </li>
     <li><a href="#license">License</a></li>
@@ -48,7 +48,7 @@ This is a simple ansible setup that allows me to grab a new ubuntu machine, and 
 
 ## Getting Started
 
-Run `install-ansible.sh` which will ansible and the necessary software to run the playbooks.
+Run `install-ansible.sh` which will install all the necessary software to run the playbooks.
 
 ### Prerequisites
 
@@ -60,7 +60,7 @@ sudo apt-add-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible -y
 ```
 
-### Installation
+### Running
 
 `ansible-playbook local.yml --ask-become-pass --ask-vault-pass`
 
