@@ -70,6 +70,6 @@ sudo apt install ansible -y
 
 ## License
 
-Distributed under the GPL-3.0 license. See `LICENSE` for more information.
+Distributed under the GPL-3.0 license. See [LICENSE](./LICENSE) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
