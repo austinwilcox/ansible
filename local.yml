@@ -98,6 +98,13 @@
       tags: 
         - never
         - sqlserver
+
+    - name: Install QMK
+      ansible.builtin.include_tasks:
+        file:  tasks/qmk.yml
+      tags: 
+        - never
+        - qmk
       
     # - name: Install Awesome
     #   ansible.builtin.include_tasks: 
