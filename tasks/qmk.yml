@@ -1,7 +1,7 @@
 - name: Install packages for QMK
   become: true 
   apt:
-    name: ["gcc-avr", "avr-libc", "dfu-programmer", "dfu-util", "git", "unzip", "python3-pip"]
+    name: ["gcc-avr", "avr-libc", "dfu-programmer", "dfu-util", "git", "unzip", "python3-pip", "python3.12-venv"]
     state: latest
   when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
   tags: qmk
