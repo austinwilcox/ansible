@@ -45,6 +45,7 @@
     - name: Setup zettelkasten
       ansible.builtin.include_tasks:
         file:  tasks/zettelkasten.yml
+      tags: zettelkasten
 
     - name: Setup dotfiles
       ansible.builtin.include_tasks:
