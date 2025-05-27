@@ -54,10 +54,9 @@
     - name: Install Neovim
       ansible.builtin.include_tasks: 
         file: tasks/nvim.yml
-        apply:
-          tags:
-            - neovim
-            - nvim
+      tags:
+        - neovim
+        - nvim
 
     - name: Install Deno
       ansible.builtin.include_tasks:
