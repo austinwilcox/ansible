@@ -41,6 +41,7 @@
     - name: Setup git ssh and openssh server
       ansible.builtin.include_tasks:
         file:  tasks/ssh.yml
+      tags: ssh
 
     - name: Setup zettelkasten
       ansible.builtin.include_tasks:
@@ -50,6 +51,7 @@
     - name: Setup dotfiles
       ansible.builtin.include_tasks:
         file:  tasks/dotfiles.yml
+      tags: dotfiles
 
     - name: Install Neovim
       ansible.builtin.include_tasks: 
@@ -78,9 +80,9 @@
       ansible.builtin.include_tasks:
         file:  tasks/node.yml
 
-    - name: Install Logseq
-      ansible.builtin.include_tasks: 
-        file: tasks/logseq.yml
+    # - name: Install Logseq
+    #   ansible.builtin.include_tasks: 
+    #     file: tasks/logseq.yml
 
     - name: Install Leftwm
       ansible.builtin.include_tasks: 
