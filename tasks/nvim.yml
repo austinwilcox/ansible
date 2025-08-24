@@ -3,6 +3,7 @@
   tags:
     - install
     - neovim
+    - nvim
 - name: Install packages on Linux
   become: true 
   apt:
@@ -17,14 +18,17 @@
   tags:
     - install
     - neovim
+    - nvim
 - name: Build neovim
   shell: "cd {{ home_dir }}/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo"
   tags:
     - install
     - neovim
+    - nvim
 - name: Install neovim
   become: true
   shell: "cd {{ home_dir }}/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo && make install"
   tags:
     - install
     - neovim
+    - nvim
