@@ -6,7 +6,7 @@
     user: "{{ lookup('env', 'USER') }}"
     git_user_name: "Austin Wilcox"
     git_user_email: "austin21wilcox@gmail.com"
-    neovim_version: "a9a3981"
+    neovim_version: "stable"
     logseq_version: "0.10.9"
 
   pre_tasks:
