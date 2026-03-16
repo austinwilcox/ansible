@@ -1,14 +1,13 @@
-- name: Git personal setup email
-  git_config:
+- name: Set git user email
+  ansible.builtin.git_config:
     name: user.email
     scope: global
-    value: "austin21wilcox@gmail.com"
-  tags:
-    - ssh
-- name: Git personal setup name
-  git_config:
+    value: "{{ git_user_email }}"
+  tags: git
+
+- name: Set git user name
+  ansible.builtin.git_config:
     name: user.name
     scope: global
-    value: "Austin Wilcox"
-  tags:
-    - ssh
+    value: "{{ git_user_name }}"
+  tags: git

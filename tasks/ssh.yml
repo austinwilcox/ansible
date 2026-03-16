@@ -1,49 +1,37 @@
-- name: Ensure .ssh directory exists.
-  file:
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
     dest: "{{ home_dir }}/.ssh"
-    mode: 0700
+    mode: "0700"
+    owner: "{{ user }}"
     state: directory
-  tags:
-    - dotfiles
-    - ssh
+  tags: ssh
 
-- name: Install ssh key
-  copy:
+- name: Install ssh private key
+  ansible.builtin.copy:
     src: "./.ssh/github_rsa"
     dest: "{{ home_dir }}/.ssh/github_rsa"
-    mode: 0600
-  tags:
-    - dotfiles
-    - ssh
+    owner: "{{ user }}"
+    mode: "0600"
+  tags: ssh
 
-- name: Install ssh key public
-  become_user: "{{ user }}"
-  copy:
+- name: Install ssh public key
+  ansible.builtin.copy:
     src: "./.ssh/github_rsa.pub"
     dest: "{{ home_dir }}/.ssh/github_rsa.pub"
-    mode: 0644
-  tags:
-    - dotfiles
-    - install
-    - ssh
+    owner: "{{ user }}"
+    mode: "0644"
+  tags: ssh
 
 - name: Set authorized key from file
-  authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ user }}"
     state: present
     key: "{{ lookup('file', home_dir + '/.ssh/github_rsa.pub') }}"
-  with_fileglob:
-    - "{{ home_dir }}/.ssh/*.pub"
-  tags:
-    - dotfiles
-    - ssh
+  tags: ssh
 
-- name: add ssh key
-  shell: ssh-add ~/.ssh/github_rsa
-
-- name: eval ssh agent
-  shell: eval "$(ssh-agent -s)"
-
-- name: Enable SSH connection
-  become: yes
-  shell: ufw allow ssh
+- name: Enable SSH through UFW
+  become: true
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+  tags: ssh

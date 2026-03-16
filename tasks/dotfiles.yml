@@ -1,99 +1,97 @@
-- name: Do dotfiles already exist
-  stat:
+- name: Check if dotfiles already exist
+  ansible.builtin.stat:
     path: "{{ home_dir }}/.dotfiles"
   register: dotfiles
-- name: Does a bashrc already exist
-  stat:
+  tags: dotfiles
+
+- name: Check if bashrc already exists
+  ansible.builtin.stat:
     path: "{{ home_dir }}/.bashrc"
   register: bashrc
+  tags: dotfiles
 
-- name: Clone dotfiles if they DO NOT exist
+- name: Clone dotfiles if they do not exist
   ansible.builtin.git:
-    repo: 'git@github.com:austinwilcox/dotfiles.git'
+    repo: "git@github.com:austinwilcox/dotfiles.git"
     dest: "{{ home_dir }}/.dotfiles"
     version: master
   when: not dotfiles.stat.exists
+  tags: dotfiles
 
-- name: Remove bashrc if it exists
-  shell: rm ~/.bashrc
+- name: Remove bashrc if it exists (stow will replace it)
+  ansible.builtin.file:
+    path: "{{ home_dir }}/.bashrc"
+    state: absent
   when: bashrc.stat.exists
+  tags: dotfiles
 
 - name: Stow dotfiles
-  shell: cd $HOME/.dotfiles && stow .
+  ansible.builtin.command: stow .
+  args:
+    chdir: "{{ home_dir }}/.dotfiles"
+  changed_when: false
+  tags: dotfiles
+
+- name: Stow Obsidian Vimrc
+  ansible.builtin.command: stow Zettelkasten-V2 -t {{ home_dir }}/Zettelkasten-V2
+  args:
+    chdir: "{{ home_dir }}/.dotfiles"
+  changed_when: false
   tags:
     - dotfiles
-    - stow
-
-#This might not be needed, need to test though
-- name: Stow Obsidian Vimrc 
-  shell: cd $HOME/.dotfiles && stow Zettelkasten-V2 -t ~/Zettelkasten-V2
-  tags:
     - zettelkasten
-    - zk
+
+- name: Check if eza is installed
+  ansible.builtin.shell: command -v eza
+  register: eza_exists
+  changed_when: false
+  failed_when: false
+  tags: dotfiles
 
 - name: Install eza
-  shell: cargo install eza
-  ignore_errors: yes
-  tags: 
-    - ls
-    - eza
+  ansible.builtin.command: "{{ home_dir }}/.cargo/bin/cargo install eza"
+  when: eza_exists.rc != 0
+  tags: dotfiles
 
-# - name: Install alacritty
-#   shell: cargo install alacritty
-#   ignore_errors: yes
-- name: Download Alacritty
+- name: Check if alacritty is installed
+  ansible.builtin.shell: command -v alacritty
+  register: alacritty_exists
+  changed_when: false
+  failed_when: false
+  tags: dotfiles
+
+- name: Clone Alacritty
   ansible.builtin.git:
-    repo: 'https://github.com/alacritty/alacritty.git'
+    repo: "https://github.com/alacritty/alacritty.git"
     dest: "{{ home_dir }}/alacritty"
     version: master
-  ignore_errors: yes
+  when: alacritty_exists.rc != 0
+  tags: dotfiles
 
-- name: Build Alacritty
-  shell: cd "{{ home_dir }}"/alacritty && cargo build --release && sudo cp target/release/alacritty /usr/local/bin && sudo cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg && sudo desktop-file-install extra/linux/Alacritty.desktop && sudo update-desktop-database
-  ignore_errors: yes
-  
-# Does not work this way because of a prompt to ask for a y from stdin
-# - name: Install Starship
-#   shell: curl -sS https://starship.rs/install.sh | sh
-#   ignore_errors: yes
+- name: Build and install Alacritty
+  ansible.builtin.shell: |
+    cargo build --release
+    sudo cp target/release/alacritty /usr/local/bin
+    sudo cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg
+    sudo desktop-file-install extra/linux/Alacritty.desktop
+    sudo update-desktop-database
+  args:
+    chdir: "{{ home_dir }}/alacritty"
+    creates: /usr/local/bin/alacritty
+  when: alacritty_exists.rc != 0
+  tags: dotfiles
 
-#TODO: Need to fix this up still
-# - name: Install Starship
-#   ansible.builtin.expect:
-#     command: curl -sS https://starship.rs/install.sh | sh
-#     responses:
-#       Question:
-#       ".*": "y"
-#   ignore_errors: yes
-
-# - name: Install Starship
-#   shell: curl -sS https://starship.rs/install.sh | sh
-#   ignore_errors: yes
-
-- name: Download Nerdfonts
+- name: Clone Nerd Fonts
   ansible.builtin.git:
-    repo: 'https://github.com/ryanoasis/nerd-fonts.git'
+    repo: "https://github.com/ryanoasis/nerd-fonts.git"
     depth: 1
     dest: "{{ home_dir }}/nerd-fonts"
     version: master
+  tags: dotfiles
 
-- name: Install UbuntuMono
-  shell: cd "{{ home_dir }}"/nerd-fonts && ./install.sh UbuntuMono
-
-  # Run a check if grep -Fxq "kmonad" /etc/crontab is found, which this will return 0 if found, and 1 if not
-
-- name: Check if kmonad is in my crontab
-  shell: grep "kmonad" /etc/crontab
-  ignore_errors: yes
-  register: kmonad_grep
-  tags: 
-    - cron
-    - never
-
-- name: Add kmonad to crontab
-  become: true
-  shell: echo "@reboot root /home/austin/kmonad/kmonad /home/austin/kmonad/kmonad-layouts/colemak-dh-extend-ansi.kbd" >> /etc/crontab
-  when: kmonad_grep is not failed
-  tags: 
-    - cron
-    - never
+- name: Install UbuntuMono Nerd Font
+  ansible.builtin.command: ./install.sh UbuntuMono
+  args:
+    chdir: "{{ home_dir }}/nerd-fonts"
+    creates: "{{ home_dir }}/.local/share/fonts/UbuntuMonoNerdFont-Regular.ttf"
+  tags: dotfiles

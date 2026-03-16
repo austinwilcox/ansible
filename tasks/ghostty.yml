@@ -1,0 +1,23 @@
+- name: Check if Ghostty is installed
+  ansible.builtin.shell: command -v ghostty
+  register: ghostty_exists
+  changed_when: false
+  failed_when: false
+  tags: ghostty
+
+- name: Add Ghostty PPA
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:ghostty/release
+    state: present
+  when: ghostty_exists.rc != 0 and ansible_system == "Linux"
+  tags: ghostty
+
+- name: Install Ghostty
+  become: true
+  ansible.builtin.apt:
+    name: ghostty
+    state: present
+    update_cache: true
+  when: ghostty_exists.rc != 0 and ansible_system == "Linux"
+  tags: ghostty

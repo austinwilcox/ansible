@@ -1,0 +1,22 @@
+- name: Install i3 and companion packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - i3
+      - i3lock
+      - i3status
+      - suckless-tools
+      - rofi
+      - feh
+      - picom
+      - dunst
+      - polybar
+      - dex
+      - xss-lock
+      - autorandr
+      - blueman
+      - brightnessctl
+      - network-manager-gnome
+    state: present
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: i3

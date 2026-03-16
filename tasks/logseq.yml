@@ -1,34 +1,40 @@
-- name: Install Dependencies
-  become: yes
-  apt:
-    name: [ "libfuse2" ]
-  tags:
-    - logseq
+- name: Check if Logseq is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/Logseq
+  register: logseq_installed
+  tags: logseq
+
+- name: Install Logseq dependencies
+  become: true
+  ansible.builtin.apt:
+    name:
+      - libfuse2
+    state: present
+  when: not logseq_installed.stat.exists
+  tags: logseq
 
 - name: Fix AppImages on 24.04
-  become: yes
-  shell: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-  tags:
-    - logseq
-
-- name: Logseq
-  shell: wget https://github.com/logseq/logseq/releases/download/0.10.9/Logseq-linux-x64-0.10.9.AppImage
-  args:
-    chdir: "{{ home_dir }}/Downloads"
-  tags:
-    - logseq
-
-- name: Make Logseq executable
-  shell: chmod +x Logseq-linux-x64-0.10.9.AppImage
-  args:
-    chdir: "{{ home_dir }}/Downloads"
-  tags:
-    - logseq
-
-- name: Move Logseq to usr/local/bin
   become: true
-  shell: cp Logseq-linux-x64-0.10.9.AppImage /usr/local/bin/Logseq
-  args:
-    chdir: "{{ home_dir }}/Downloads"
-  tags:
-    - logseq
+  ansible.posix.sysctl:
+    name: kernel.apparmor_restrict_unprivileged_userns
+    value: "0"
+    state: present
+  tags: logseq
+
+- name: Download Logseq AppImage
+  ansible.builtin.get_url:
+    url: "https://github.com/logseq/logseq/releases/download/{{ logseq_version }}/Logseq-linux-x64-{{ logseq_version }}.AppImage"
+    dest: "{{ home_dir }}/Downloads/Logseq-linux-x64-{{ logseq_version }}.AppImage"
+    mode: "0755"
+  when: not logseq_installed.stat.exists
+  tags: logseq
+
+- name: Install Logseq to /usr/local/bin
+  become: true
+  ansible.builtin.copy:
+    src: "{{ home_dir }}/Downloads/Logseq-linux-x64-{{ logseq_version }}.AppImage"
+    dest: /usr/local/bin/Logseq
+    mode: "0755"
+    remote_src: true
+  when: not logseq_installed.stat.exists
+  tags: logseq

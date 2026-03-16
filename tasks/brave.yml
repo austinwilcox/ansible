@@ -1,12 +1,22 @@
-- name: required libraries for brave
+- name: Check if Brave is installed
+  ansible.builtin.shell: command -v brave-browser
+  register: brave_exists
+  changed_when: false
+  failed_when: false
+  tags: brave
+
+- name: Install Brave dependencies
   become: true
-  apt:
-    name: ["curl", "apt-transport-https"]
-  tags:
-    - brave
-    - install
-- name: Install brave with curl and sh
+  ansible.builtin.apt:
+    name:
+      - curl
+      - apt-transport-https
+    state: present
+  when: brave_exists.rc != 0
+  tags: brave
+
+- name: Install Brave browser
   become: true
-  shell: curl -fsS https://dl.brave.com/install.sh | sh
-  tags:
-    - brave
+  ansible.builtin.shell: curl -fsS https://dl.brave.com/install.sh | sh
+  when: brave_exists.rc != 0
+  tags: brave

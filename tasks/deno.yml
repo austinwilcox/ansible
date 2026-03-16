@@ -1,21 +1,25 @@
-- name: Check if Downloads folder exists
-  stat:
-    path: "{{ home_dir }}/Downloads"
-  register: downloads_folder
-
-- name: Create Downloads folder if it doesn't exist
-  file:
+- name: Ensure Downloads folder exists
+  ansible.builtin.file:
     path: "{{ home_dir }}/Downloads"
     state: directory
-  when: not downloads_folder.stat.exists
+    mode: "0755"
+  tags: deno
 
-- name: Download Deno binary
-  get_url:
+- name: Download Deno installer
+  ansible.builtin.get_url:
     url: https://deno.land/x/install/install.sh
     dest: "{{ home_dir }}/Downloads/install-deno.sh"
-    mode: '+x'  # Make the script executable
+    mode: "0755"
+  tags: deno
 
-- name: Run Deno installer script for user Austin
-  command: "{{ home_dir }}/Downloads/install-deno.sh"
+- name: Install Deno
+  ansible.builtin.command: "{{ home_dir }}/Downloads/install-deno.sh"
   args:
     creates: "{{ home_dir }}/.deno/bin/deno"
+  tags: deno
+
+- name: Clean up Deno installer
+  ansible.builtin.file:
+    path: "{{ home_dir }}/Downloads/install-deno.sh"
+    state: absent
+  tags: deno

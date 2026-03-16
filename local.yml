@@ -4,57 +4,62 @@
   vars:
     home_dir: "{{ lookup('env', 'HOME') }}"
     user: "{{ lookup('env', 'USER') }}"
+    git_user_name: "Austin Wilcox"
+    git_user_email: "austin21wilcox@gmail.com"
+    neovim_version: "a9a3981"
+    logseq_version: "0.10.9"
+
   pre_tasks:
-  - name: Detect if I am on a mac
-    stat:
-      path: /usr/local/Homebrew/bin/brew
-    tags:
-      - os
-      - packages
-    register: is_brew_installed
-  - name: Update Apt
-    become: true
-    apt:
-      force_apt_get: true
-      update_cache: false
-      state: present
-    tags:
-      - install
-      - update
-      - setup
-      - packages
-    when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+    - name: Detect if I am on a mac
+      ansible.builtin.stat:
+        path: /usr/local/Homebrew/bin/brew
+      register: is_brew_installed
+      tags:
+        - always
+
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        force_apt_get: true
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+      tags:
+        - always
+
   tasks:
     - name: Install Packages
       ansible.builtin.include_tasks:
-        file:  tasks/packages.yml
+        file: tasks/packages.yml
       tags: packages
 
     - name: Install Rust
       ansible.builtin.include_tasks:
-        file:  tasks/rust.yml
+        file: tasks/rust.yml
+      tags: rust
 
     - name: Setup git
       ansible.builtin.include_tasks:
-        file:  tasks/git-setup.yml
+        file: tasks/git-setup.yml
+      tags: git
 
     - name: Setup git ssh and openssh server
       ansible.builtin.include_tasks:
-        file:  tasks/ssh.yml
+        file: tasks/ssh.yml
       tags: ssh
 
     - name: Setup zettelkasten
       ansible.builtin.include_tasks:
-        file:  tasks/zettelkasten.yml
+        file: tasks/zettelkasten.yml
       tags: zettelkasten
 
     - name: Setup dotfiles
       ansible.builtin.include_tasks:
-        file:  tasks/dotfiles.yml
+        file: tasks/dotfiles.yml
       tags: dotfiles
 
     - name: Install Neovim
-      ansible.builtin.include_tasks: 
+      ansible.builtin.include_tasks:
         file: tasks/nvim.yml
       tags:
         - neovim
@@ -62,53 +67,69 @@
 
     - name: Install Deno
       ansible.builtin.include_tasks:
-        file:  tasks/deno.yml
+        file: tasks/deno.yml
+      tags: deno
 
     - name: Install Disconnected
       ansible.builtin.include_tasks:
-        file:  tasks/disconnected.yml
+        file: tasks/disconnected.yml
+      tags: disconnected
 
     - name: Install Brave
       ansible.builtin.include_tasks:
-        file:  tasks/brave.yml
+        file: tasks/brave.yml
+      tags: brave
 
     - name: Install Tmux and set up TPM
       ansible.builtin.include_tasks:
-        file:  tasks/tmux.yml
+        file: tasks/tmux.yml
+      tags: tmux
 
     - name: Install Node
       ansible.builtin.include_tasks:
-        file:  tasks/node.yml
+        file: tasks/node.yml
+      tags: node
 
-    # - name: Install Logseq
-    #   ansible.builtin.include_tasks: 
-    #     file: tasks/logseq.yml
+    - name: Install Docker
+      ansible.builtin.include_tasks:
+        file: tasks/docker.yml
+      tags: docker
 
-    - name: Install Leftwm
-      ansible.builtin.include_tasks: 
-        file: tasks/leftwm.yml
-      tags: leftwm
+    - name: Install Ghostty
+      ansible.builtin.include_tasks:
+        file: tasks/ghostty.yml
+      tags: ghostty
+
+    - name: Install i3
+      ansible.builtin.include_tasks:
+        file: tasks/i3.yml
+      tags: i3
+
+    - name: Setup kmonad (Colemak-DH)
+      ansible.builtin.include_tasks:
+        file: tasks/kmonad.yml
+      tags: kmonad
 
     - name: Install Yazi
       ansible.builtin.include_tasks:
-        file:  tasks/yazi.yml
+        file: tasks/yazi.yml
       tags: yazi
 
     - name: Install Sql Server with Podman
       ansible.builtin.include_tasks:
-        file:  tasks/sqlServer.yml
-      tags: 
+        file: tasks/sqlServer.yml
+      tags:
         - never
         - sqlserver
 
     - name: Install QMK
       ansible.builtin.include_tasks:
-        file:  tasks/qmk.yml
-      tags: 
+        file: tasks/qmk.yml
+      tags:
         - never
         - qmk
-      
-    # - name: Install Awesome
-    #   ansible.builtin.include_tasks: 
-    #     file: tasks/awesome.yml
-    #   tags: awesome
+
+  handlers:
+    - name: reload udev
+      become: true
+      ansible.builtin.command: udevadm control --reload-rules

@@ -1,30 +1,104 @@
 - name: Install Homebrew
-  become: yes
-  command: "/bin/bash -c '{{ url }}'"
+  become: true
+  ansible.builtin.command: "/bin/bash -c '{{ url }}'"
   vars:
     url: "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
-  when: ansible_system == "Darwin"
+  when: ansible_system == "Darwin" and not is_brew_installed.stat.exists
   tags: packages
 
 - name: Install packages on Linux
-  become: true 
-  apt:
-    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "build-essential", "make", "ssh", "cmake", "neofetch", "libfreetype6-dev", "libfontconfig1-dev", "libxcb-xfixes0-dev", "libxkbcommon-dev", "python3", "openssh-server", "thunar", "pavucontrol", "virt-manager", "libreoffice", "podman", "peek", "filezilla", "flameshot", "lxappearance", "flameshot", "okular" ]
-    state: latest
+  become: true
+  ansible.builtin.apt:
+    name:
+      # Core utilities
+      - curl
+      - wget
+      - git
+      - stow
+      - vim
+      - unzip
+      - zip
+      - dos2unix
+      - tree
+      - htop
+      - net-tools
+      - nmap
+      - fastfetch
+      - ssh
+      - openssh-server
+      # Build tools
+      - build-essential
+      - make
+      - cmake
+      - clang-format
+      - python3
+      # Desktop environment
+      - ufw
+      - tmux
+      - fzf
+      - xclip
+      - screenkey
+      - tldr
+      - ripgrep
+      - lxappearance
+      # Applications
+      - gimp
+      - thunar
+      - pavucontrol
+      - virt-manager
+      - libreoffice
+      - podman
+      - podman-compose
+      - peek
+      - filezilla
+      - flameshot
+      - okular
+      - meld
+      - obs-studio
+      - flatpak
+      - syncthing
+      - helix
+      - hugo
+      - pandoc
+      - zsh
+      # Libraries
+      - libfreetype6-dev
+      - libfontconfig1-dev
+      - libxcb-xfixes0-dev
+      - libxkbcommon-dev
+    state: present
   when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: packages
+
+- name: Install snap packages on Linux
+  become: true
+  community.general.snap:
+    name:
+      - bruno
+      - mailspring
+      - losslesscut
+    state: present
+  when: ansible_system == "Linux"
   tags: packages
 
 - name: Install Packages on Darwin
   become: true
-  homebrew:
-    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "brave" ]
-    state: latest
+  community.general.homebrew:
+    name:
+      - curl
+      - stow
+      - vim
+      - git
+      - ufw
+      - tmux
+      - fzf
+      - gimp
+      - xclip
+      - screenkey
+      - tldr
+      - ripgrep
+      - unzip
+      - brave
+    state: present
   when: is_brew_installed.stat.exists
-  tags: packages
-
-- name: Install Packages on Windows
-  win_chocolatey:
-    name: [ "curl", "stow", "vim", "git", "ufw", "tmux", "fzf", "gimp", "xclip", "screenkey", "tldr", "ripgrep", "unzip", "brave" ]
-    state: latest
-  when: ansible_system == "Windows"
   tags: packages

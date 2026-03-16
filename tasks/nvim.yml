@@ -1,34 +1,63 @@
-- name: Remove neovim
-  shell: rm -rf ~/neovim
-  tags:
-    - install
-    - neovim
-    - nvim
-- name: Install packages on Linux
-  become: true 
-  apt:
-    name: ["make", "cmake", "autoconf", "automake", "g++", "libtool", "libtool-bin", "ninja-build", "pkg-config", "unzip", "gettext" ]
-    state: latest
+- name: Check installed neovim version
+  ansible.builtin.shell: nvim --version | head -1
+  register: nvim_installed
+  changed_when: false
+  failed_when: false
+  tags: neovim
+
+- name: Install neovim build dependencies
+  become: true
+  ansible.builtin.apt:
+    name:
+      - make
+      - cmake
+      - autoconf
+      - automake
+      - g++
+      - libtool
+      - libtool-bin
+      - ninja-build
+      - pkg-config
+      - unzip
+      - gettext
+    state: present
   when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: neovim
+
 - name: Clone Neovim
   ansible.builtin.git:
-    repo: 'https://github.com/neovim/neovim.git'
+    repo: "https://github.com/neovim/neovim.git"
     dest: "{{ home_dir }}/neovim"
-    version: "a9a3981"
-  tags:
-    - install
-    - neovim
-    - nvim
+    version: "{{ neovim_version }}"
+    force: true
+  register: nvim_clone
+  tags: neovim
+
 - name: Build neovim
-  shell: "cd {{ home_dir }}/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo"
-  tags:
-    - install
-    - neovim
-    - nvim
+  ansible.builtin.command: make CMAKE_BUILD_TYPE=RelWithDebInfo
+  args:
+    chdir: "{{ home_dir }}/neovim"
+  when: nvim_clone.changed or nvim_installed.rc != 0
+  tags: neovim
+
 - name: Install neovim
   become: true
-  shell: "cd {{ home_dir }}/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo && make install"
-  tags:
-    - install
-    - neovim
-    - nvim
+  ansible.builtin.command: make install
+  args:
+    chdir: "{{ home_dir }}/neovim"
+  when: nvim_clone.changed or nvim_installed.rc != 0
+  tags: neovim
+
+- name: Install neovim plugins via lazy.nvim
+  ansible.builtin.command: nvim --headless "+Lazy! sync" +qa
+  environment:
+    HOME: "{{ home_dir }}"
+  changed_when: false
+  tags: neovim
+
+- name: Install treesitter parsers
+  ansible.builtin.command: nvim --headless "+TSUpdateSync" +qa
+  environment:
+    HOME: "{{ home_dir }}"
+  changed_when: false
+  tags: neovim

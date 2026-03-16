@@ -1,14 +1,37 @@
-- name: Install Volta
-  shell: curl https://get.volta.sh | bash
-  tags:
-    - node
+- name: Check if Volta is installed
+  ansible.builtin.shell: command -v volta
+  register: volta_exists
+  changed_when: false
+  failed_when: false
+  tags: node
 
-- name: Refresh Bash
-  shell: "exec bash"  # Restart the Bash shell session
-  args:
-    executable: /bin/bash
+- name: Download Volta installer
+  ansible.builtin.get_url:
+    url: https://get.volta.sh
+    dest: /tmp/install-volta.sh
+    mode: "0755"
+  when: volta_exists.rc != 0
+  tags: node
+
+- name: Install Volta
+  ansible.builtin.command: /tmp/install-volta.sh
+  when: volta_exists.rc != 0
+  tags: node
+
+- name: Clean up Volta installer
+  ansible.builtin.file:
+    path: /tmp/install-volta.sh
+    state: absent
+  tags: node
+
+- name: Check if Node is installed via Volta
+  ansible.builtin.shell: "{{ home_dir }}/.volta/bin/volta list node"
+  register: volta_node
+  changed_when: false
+  failed_when: false
+  tags: node
 
 - name: Install Node with Volta
-  shell: volta install node
-  tags:
-    - node
+  ansible.builtin.command: "{{ home_dir }}/.volta/bin/volta install node"
+  when: volta_node.rc != 0 or "runtime node" not in volta_node.stdout
+  tags: node

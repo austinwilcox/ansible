@@ -1,15 +1,27 @@
-- name: Remove Disconnected
-  shell: rm -rf "{{ home_dir }}/disconnected"
-
-- name: Pull Disconnected
+- name: Clone Disconnected
   ansible.builtin.git:
-    repo: 'git@github.com:austinwilcox/disconnected.git'
+    repo: "git@github.com:austinwilcox/disconnected.git"
     dest: "{{ home_dir }}/disconnected"
     version: master
+  register: disconnected_clone
+  tags: disconnected
 
-- name: Compile and deploy command
-  shell: "cd {{ home_dir }}/disconnected && {{ home_dir }}/.deno/bin/deno compile --allow-read --allow-env --allow-write --allow-run --output disconnected index.ts"
+- name: Compile Disconnected
+  ansible.builtin.command: >
+    {{ home_dir }}/.deno/bin/deno compile
+    --allow-read --allow-env --allow-write --allow-run
+    --output disconnected index.ts
+  args:
+    chdir: "{{ home_dir }}/disconnected"
+  when: disconnected_clone.changed
+  tags: disconnected
 
-- name: Move disconnected to /usr/local/bin
-  become: yes
-  shell: "cd {{ home_dir }}/disconnected && cp disconnected /usr/local/bin"
+- name: Install Disconnected to /usr/local/bin
+  become: true
+  ansible.builtin.copy:
+    src: "{{ home_dir }}/disconnected/disconnected"
+    dest: /usr/local/bin/disconnected
+    mode: "0755"
+    remote_src: true
+  when: disconnected_clone.changed
+  tags: disconnected

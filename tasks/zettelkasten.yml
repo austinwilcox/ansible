@@ -1,5 +1,6 @@
-- name: Zettelkasten
+- name: Clone Zettelkasten
   ansible.builtin.git:
-    repo: 'git@github.com:austinwilcox/Zettelkasten-v2.git'
+    repo: "git@github.com:austinwilcox/Zettelkasten-v2.git"
     dest: "{{ home_dir }}/Zettelkasten-V2"
     version: main
+  tags: zettelkasten

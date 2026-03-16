@@ -1,5 +1,11 @@
-#Expects an input of y, need to use the builtin_expect or whatever that api is
+- name: Check if yazi is installed
+  ansible.builtin.shell: command -v yazi
+  register: yazi_exists
+  changed_when: false
+  failed_when: false
+  tags: yazi
+
 - name: Install yazi
-  shell: cargo install --locked yazi-fm yazi-cli
-  ignore_errors: yes
+  ansible.builtin.command: "{{ home_dir }}/.cargo/bin/cargo install --locked yazi-fm yazi-cli"
+  when: yazi_exists.rc != 0
   tags: yazi

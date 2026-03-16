@@ -1,22 +1,33 @@
-- name: Install packages for QMK
-  become: true 
-  apt:
-    name: ["gcc-avr", "avr-libc", "dfu-programmer", "dfu-util", "git", "unzip", "python3-pip", "python3.12-venv"]
-    state: latest
+- name: Install QMK dependencies
+  become: true
+  ansible.builtin.apt:
+    name:
+      - gcc-avr
+      - avr-libc
+      - dfu-programmer
+      - dfu-util
+      - git
+      - unzip
+      - python3-pip
+      - python3.12-venv
+    state: present
   when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
   tags: qmk
 
-- name: Clone my qmk_firmware
+- name: Clone QMK firmware
   ansible.builtin.git:
-    repo: 'git@github.com:austinwilcox/qmk_firmware'
+    repo: "git@github.com:austinwilcox/qmk_firmware"
     dest: "{{ home_dir }}/Software/qmk_firmware"
     version: master
   tags: qmk
 
-- name: Install qmk_firmware with python3 cli
-  shell: python3 -m pip install --user qmk
+- name: Install QMK CLI
+  ansible.builtin.command: python3 -m pip install --user qmk
+  args:
+    creates: "{{ home_dir }}/.local/bin/qmk"
   tags: qmk
 
-- name: qmk setup
-  shell: qmk setup
+- name: Run QMK setup
+  ansible.builtin.command: "{{ home_dir }}/.local/bin/qmk setup"
+  changed_when: false
   tags: qmk
