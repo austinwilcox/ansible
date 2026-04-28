@@ -40,6 +40,8 @@
 
 This is a simple ansible setup that allows me to grab a new ubuntu machine, and automate my setup so that I can spend more time writing software than trying to rememember which software packages that I need to effectively work.
 
+Please note that this has been moved to gitea, this is simply a mirror.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With [Ansible](https://docs.ansible.com/)
