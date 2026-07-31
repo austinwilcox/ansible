@@ -1,0 +1,80 @@
+- name: Install awesomewm and companion packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      # Window manager
+      - awesome
+      - awesome-extra
+      - lua5.3
+      # Launcher, compositor, notifications, wallpaper
+      - rofi
+      - picom
+      - dunst
+      - feh
+      # Lock and session handling
+      - i3lock
+      - xss-lock
+      - dex
+      - x11-xserver-utils
+      # Tray applets and hardware controls
+      - network-manager-gnome
+      - blueman
+      - brightnessctl
+      - playerctl
+      - pulseaudio-utils
+      - autorandr
+      # Screenshots and font glyphs used by the theme
+      - flameshot
+      - fonts-font-awesome
+    state: present
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: awesome
+
+- name: Check how ~/.config/awesome currently exists
+  ansible.builtin.stat:
+    path: "{{ home_dir }}/.config/awesome"
+  register: awesome_config
+  tags: awesome
+
+# Stow runs before this and, with nothing at ~/.config/awesome, symlinks the
+# whole directory into .dotfiles. Drop that link so copycats can be cloned in
+# its place; rc.lua is linked back individually afterwards.
+- name: Remove the stow directory symlink for the awesome config
+  ansible.builtin.file:
+    path: "{{ home_dir }}/.config/awesome"
+    state: absent
+  when: awesome_config.stat.exists and awesome_config.stat.islnk
+  tags: awesome
+
+- name: Clone awesome-copycats (provides lain, freedesktop and themes)
+  ansible.builtin.git:
+    repo: "https://github.com/lcpz/awesome-copycats.git"
+    dest: "{{ home_dir }}/.config/awesome"
+    version: master
+    recursive: true
+    # rc.lua is replaced by a symlink to the dotfiles copy below, so never
+    # clobber local state on re-runs.
+    update: false
+  tags: awesome
+
+# Relative src on purpose: it is byte-identical to the link stow itself would
+# create, so re-running either tool is a no-op.
+- name: Replace the copycats rc.lua with the dotfiles version
+  ansible.builtin.file:
+    src: "../../.dotfiles/.config/awesome/rc.lua"
+    dest: "{{ home_dir }}/.config/awesome/rc.lua"
+    state: link
+    force: true
+  tags: awesome
+
+- name: Set awesome as the default session for gdm
+  become: true
+  community.general.ini_file:
+    path: "/var/lib/AccountsService/users/{{ user }}"
+    section: User
+    option: XSession
+    value: awesome
+    mode: "0644"
+    create: true
+  when: ansible_system == "Linux"
+  tags: awesome

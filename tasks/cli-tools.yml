@@ -1,0 +1,21 @@
+# Cargo-installed CLI utilities. Crate name and binary name differ for
+# worktrunk, so each entry carries both.
+- name: Check which cargo CLI tools are already installed
+  ansible.builtin.shell: "command -v {{ item.bin }}"
+  register: cargo_tool_exists
+  changed_when: false
+  failed_when: false
+  loop:
+    - { crate: jellyfin-tui, bin: jellyfin-tui }
+    - { crate: worktrunk, bin: wt }
+  loop_control:
+    label: "{{ item.bin }}"
+  tags: cli-tools
+
+- name: Install cargo CLI tools
+  ansible.builtin.command: "{{ home_dir }}/.cargo/bin/cargo install {{ item.item.crate }}"
+  loop: "{{ cargo_tool_exists.results }}"
+  loop_control:
+    label: "{{ item.item.crate }}"
+  when: item.rc != 0
+  tags: cli-tools

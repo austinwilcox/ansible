@@ -1,0 +1,67 @@
+- name: Install OpenTofu repository dependencies
+  become: true
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: opentofu
+
+- name: Create the apt keyrings directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  when: ansible_pkg_mgr == "apt"
+  tags: opentofu
+
+# The repo is signed by two keys: the project key and the packagecloud repo key.
+- name: Add the OpenTofu signing keys
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "/etc/apt/keyrings/{{ item.name }}.asc"
+    mode: "0644"
+  loop:
+    - { name: opentofu, url: "https://get.opentofu.org/opentofu.gpg" }
+    - { name: opentofu-repo, url: "https://packages.opentofu.org/opentofu/tofu/gpgkey" }
+  loop_control:
+    label: "{{ item.name }}"
+  when: ansible_pkg_mgr == "apt"
+  tags: opentofu
+
+- name: Dearmor the OpenTofu signing keys
+  become: true
+  ansible.builtin.command: >
+    gpg --batch --yes --dearmor
+    -o /etc/apt/keyrings/{{ item }}.gpg
+    /etc/apt/keyrings/{{ item }}.asc
+  args:
+    creates: "/etc/apt/keyrings/{{ item }}.gpg"
+  loop:
+    - opentofu
+    - opentofu-repo
+  when: ansible_pkg_mgr == "apt"
+  tags: opentofu
+
+- name: Add the OpenTofu apt repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main"
+    filename: opentofu
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == "apt"
+  tags: opentofu
+
+- name: Install OpenTofu
+  become: true
+  ansible.builtin.apt:
+    name: tofu
+    state: present
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: opentofu

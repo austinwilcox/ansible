@@ -1,0 +1,66 @@
+- name: Install desktop applications from apt
+  become: true
+  ansible.builtin.apt:
+    name:
+      - xournalpp
+      - gparted
+      - picard
+    state: present
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: desktop-apps
+
+- name: Download Obsidian deb
+  ansible.builtin.get_url:
+    url: "https://github.com/obsidianmd/obsidian-releases/releases/download/v{{ obsidian_version }}/obsidian_{{ obsidian_version }}_amd64.deb"
+    dest: "{{ home_dir }}/Downloads/obsidian_{{ obsidian_version }}_amd64.deb"
+    mode: "0644"
+  when: ansible_pkg_mgr == "apt"
+  tags: desktop-apps
+
+- name: Install Obsidian
+  become: true
+  ansible.builtin.apt:
+    deb: "{{ home_dir }}/Downloads/obsidian_{{ obsidian_version }}_amd64.deb"
+  when: ansible_pkg_mgr == "apt"
+  tags: desktop-apps
+
+# Upstream builds one deb per distro codename; releases after 1.12.0 ship no
+# deb at all, so this stays pinned until they resume.
+- name: Download Jellyfin Media Player deb
+  ansible.builtin.get_url:
+    url: "https://github.com/jellyfin/jellyfin-desktop/releases/download/v{{ jellyfin_media_player_version }}/jellyfin-media-player_{{ jellyfin_media_player_version }}-{{ ansible_distribution_release }}.deb"
+    dest: "{{ home_dir }}/Downloads/jellyfin-media-player_{{ jellyfin_media_player_version }}-{{ ansible_distribution_release }}.deb"
+    mode: "0644"
+  when: ansible_pkg_mgr == "apt"
+  tags: desktop-apps
+
+- name: Install Jellyfin Media Player
+  become: true
+  ansible.builtin.apt:
+    deb: "{{ home_dir }}/Downloads/jellyfin-media-player_{{ jellyfin_media_player_version }}-{{ ansible_distribution_release }}.deb"
+  when: ansible_pkg_mgr == "apt"
+  tags: desktop-apps
+
+- name: Install Zed
+  ansible.builtin.shell: curl -fsSL https://zed.dev/install.sh | sh
+  args:
+    creates: "{{ home_dir }}/.local/bin/zed"
+  tags: desktop-apps
+
+- name: Add the flathub remote
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+    state: present
+  when: ansible_system == "Linux"
+  tags: desktop-apps
+
+- name: Install flatpak applications
+  become: true
+  community.general.flatpak:
+    name:
+      - fr.handbrake.ghb
+    state: present
+  when: ansible_system == "Linux"
+  tags: desktop-apps

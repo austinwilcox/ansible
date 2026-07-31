@@ -8,6 +8,8 @@
     git_user_email: "austin21wilcox@gmail.com"
     neovim_version: "stable"
     logseq_version: "0.10.9"
+    obsidian_version: "1.13.4"
+    jellyfin_media_player_version: "1.12.0"
 
   pre_tasks:
     - name: Detect if I am on a mac
@@ -105,6 +107,13 @@
         file: tasks/i3.yml
       tags: i3
 
+    - name: Install awesomewm
+      ansible.builtin.include_tasks:
+        file: tasks/awesome.yml
+      tags:
+        - awesome
+        - awesomewm
+
     - name: Setup kmonad (Colemak-DH)
       ansible.builtin.include_tasks:
         file: tasks/kmonad.yml
@@ -114,6 +123,21 @@
       ansible.builtin.include_tasks:
         file: tasks/yazi.yml
       tags: yazi
+
+    - name: Install cargo CLI tools
+      ansible.builtin.include_tasks:
+        file: tasks/cli-tools.yml
+      tags: cli-tools
+
+    - name: Install desktop applications
+      ansible.builtin.include_tasks:
+        file: tasks/desktop-apps.yml
+      tags: desktop-apps
+
+    - name: Install OpenTofu
+      ansible.builtin.include_tasks:
+        file: tasks/opentofu.yml
+      tags: opentofu
 
     - name: Install Sql Server with Podman
       ansible.builtin.include_tasks:
