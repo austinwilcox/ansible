@@ -33,6 +33,14 @@
   register: nvim_clone
   tags: neovim
 
+- name: Clean previous neovim build
+  ansible.builtin.command: make distclean
+  args:
+    chdir: "{{ home_dir }}/neovim"
+  when: nvim_clone.changed
+  failed_when: false
+  tags: neovim
+
 - name: Build neovim
   ansible.builtin.command: make CMAKE_BUILD_TYPE=RelWithDebInfo
   args:
