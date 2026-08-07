@@ -1,0 +1,11 @@
+.git
+.github
+LICENSE
+readme.md
+docker-build.sh
+install-ansible.sh
+
+# The vaulted SSH key is never needed in the image -- the `ssh` tag is in
+# CONTAINER_SKIP_TAGS -- and the CI image gets pushed to a registry, so keep it
+# out rather than ship an encrypted secret somewhere it does not need to be.
+.ssh

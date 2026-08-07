@@ -68,6 +68,48 @@ sudo apt install ansible -y
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Testing
+
+The playbook is exercised against a clean Ubuntu container so that rotted
+download URLs and renamed apt packages surface here rather than while setting up
+a real machine.
+
+Locally:
+
+```sh
+./docker-build.sh                      # everything a container can satisfy
+./docker-build.sh --tags rust,node     # scope it to a few tags
+```
+
+A bare run takes a while, since it includes the cargo builds.
+
+### What a container cannot cover
+
+`CONTAINER_SKIP_TAGS` in the `Dockerfile` is the single definition of what gets
+skipped. These are **not** covered by CI, so they still need testing on real
+hardware:
+
+| Tags                                          | Why                                        |
+| --------------------------------------------- | ------------------------------------------ |
+| `snap`                                         | snapd needs a real init system             |
+| `ufw`                                          | no netfilter in an unprivileged container  |
+| `ssh`, `dotfiles`, `zettelkasten`, `disconnected` | private repos behind the vaulted SSH key |
+| `i3`, `awesome`, `desktop-apps`, `nextcloud`, `kmonad` | need a display, flatpak, or real input hardware |
+| `neovim`                                       | the Lazy sync step needs the dotfiles      |
+
+`snap` and `ufw` exist only as opt-out tags; they tag a single task each so a
+container can skip it without skipping the rest of its file.
+
+In GitHub Actions (`.github/workflows/ci.yml`):
+
+- **lint** — `ansible-lint` plus `--syntax-check`, on every push
+- **smoke** — the container-safe tags, split into four parallel buckets
+- **idempotence** — runs `packages,git,tmux,opentofu` twice and requires
+  `changed=0` on the second pass
+- **slow** — cargo and neovim source builds, weekly on a schedule
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- LICENSE -->
 
 ## License

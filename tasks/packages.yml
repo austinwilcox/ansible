@@ -23,7 +23,6 @@
       - htop
       - net-tools
       - nmap
-      - fastfetch
       - ssh
       - openssh-server
       # Build tools
@@ -57,7 +56,6 @@
       - obs-studio
       - flatpak
       - syncthing
-      - helix
       - hugo
       - pandoc
       - zsh
@@ -79,7 +77,10 @@
       - losslesscut
     state: present
   when: ansible_system == "Linux"
-  tags: packages
+  # `snap` tag lets containers skip this -- snapd needs a real init system.
+  tags:
+    - packages
+    - snap
 
 - name: Install Packages on Darwin
   become: true
@@ -101,4 +102,36 @@
       - brave
     state: present
   when: is_brew_installed.stat.exists
+  tags: packages
+
+# Neither fastfetch nor helix is in the Ubuntu repos. Both publish a deb with
+# every GitHub release.
+- name: Download fastfetch deb
+  ansible.builtin.get_url:
+    url: "https://github.com/fastfetch-cli/fastfetch/releases/download/{{ fastfetch_version }}/fastfetch-linux-amd64.deb"
+    dest: "{{ home_dir }}/Downloads/fastfetch-{{ fastfetch_version }}-amd64.deb"
+    mode: "0644"
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: packages
+
+- name: Install fastfetch
+  become: true
+  ansible.builtin.apt:
+    deb: "{{ home_dir }}/Downloads/fastfetch-{{ fastfetch_version }}-amd64.deb"
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: packages
+
+- name: Download helix deb
+  ansible.builtin.get_url:
+    url: "https://github.com/helix-editor/helix/releases/download/{{ helix_version }}/helix_{{ helix_deb_version }}-1_amd64.deb"
+    dest: "{{ home_dir }}/Downloads/helix_{{ helix_deb_version }}-1_amd64.deb"
+    mode: "0644"
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: packages
+
+- name: Install helix
+  become: true
+  ansible.builtin.apt:
+    deb: "{{ home_dir }}/Downloads/helix_{{ helix_deb_version }}-1_amd64.deb"
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
   tags: packages

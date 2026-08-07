@@ -1,0 +1,159 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  # The point of the slow jobs is catching rot -- dead download URLs, renamed
+  # apt packages, upstream repos that moved -- which happens on upstream's
+  # schedule, not on yours.
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}/ci:${{ github.sha }}
+
+jobs:
+  lint:
+    name: Lint and syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ansible
+        run: pip install ansible ansible-lint
+
+      - name: Syntax check
+        run: ansible-playbook local.yml --syntax-check
+
+      - name: Lint
+        run: ansible-lint
+
+  build:
+    name: Build test image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Fast feedback on every push. Each bucket is its own job so one broken
+  # upstream does not mask the others, and so a red X tells you which area
+  # broke without opening the log.
+  smoke:
+    name: "Run: ${{ matrix.name }}"
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: packages
+            tags: packages,git
+          - name: languages
+            tags: rust,node,deno
+          - name: tooling
+            tags: tmux,opentofu,docker
+          - name: browsers
+            tags: brave,ghostty
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # CONTAINER_SKIP_TAGS is baked into the image, so the Dockerfile stays the
+      # single definition of what a container cannot satisfy.
+      - name: Run playbook
+        env:
+          TAGS: ${{ matrix.tags }}
+        run: |
+          docker run --rm -e TAGS "$IMAGE" sh -c \
+            'ansible-playbook local.yml --tags "$TAGS" --skip-tags "$CONTAINER_SKIP_TAGS"'
+
+  # Second run over tags that should already be satisfied. A task reporting
+  # `changed` here is one that redoes work on every laptop rebuild. This tag set
+  # is clean today, so keep it blocking to stop it regressing.
+  idempotence:
+    name: Idempotence
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run playbook twice, second run must report no changes
+        env:
+          TAGS: packages,git,tmux,opentofu
+        run: |
+          docker run --rm -e TAGS "$IMAGE" bash -c '
+            set -euo pipefail
+            skip=$CONTAINER_SKIP_TAGS
+            ansible-playbook local.yml --tags "$TAGS" --skip-tags "$skip"
+            ansible-playbook local.yml --tags "$TAGS" --skip-tags "$skip" | tee /tmp/second.log
+            grep -qE "changed=0 +unreachable=0 +failed=0" /tmp/second.log
+          ' || { echo "::error::playbook is not idempotent"; exit 1; }
+
+  # Cargo builds -- correct, but far too slow to sit on every push. This is the
+  # job that catches crates.io and rustc breakage.
+  slow:
+    name: "Slow: cargo tools"
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run playbook
+        env:
+          TAGS: rust,yazi,cli-tools
+        run: |
+          docker run --rm -e TAGS "$IMAGE" sh -c \
+            'ansible-playbook local.yml --tags "$TAGS" --skip-tags "$CONTAINER_SKIP_TAGS"'

@@ -1,0 +1,31 @@
+# Repeated from desktop-apps.yml so this file still works when run standalone
+# with --tags nextcloud. flatpak_remote is idempotent.
+- name: Add the flathub remote
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+    state: present
+  when: ansible_facts["system"] == "Linux"
+  tags: nextcloud
+
+# Ubuntu 24.04 ships 3.11.0 in apt; flathub tracks upstream, so use flatpak.
+- name: Install Nextcloud desktop client
+  become: true
+  community.general.flatpak:
+    name:
+      - com.nextcloud.desktopclient.nextcloud
+    state: present
+  when: ansible_facts["system"] == "Linux"
+  tags: nextcloud
+
+# The client stores its account in ~/.config/Nextcloud/nextcloud.cfg, but the
+# token comes from an interactive browser login, so the account itself is not
+# provisioned here. Creating the sync target up front keeps first-run setup to
+# just picking this folder.
+- name: Ensure Nextcloud sync folder exists
+  ansible.builtin.file:
+    path: "{{ nextcloud_sync_dir }}"
+    state: directory
+    mode: "0755"
+  tags: nextcloud

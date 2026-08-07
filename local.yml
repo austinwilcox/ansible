@@ -7,11 +7,29 @@
     git_user_name: "Austin Wilcox"
     git_user_email: "austin21wilcox@gmail.com"
     neovim_version: "stable"
+    fastfetch_version: "2.42.0"
+    # Upstream tags and deb filenames disagree on zero-padding, so both forms
+    # are pinned rather than derived.
+    helix_version: "25.07.1"
+    helix_deb_version: "25.7.1"
+    ghostty_version: "1.3.1-0-ppa2"
+    ghostty_deb_version: "1.3.1-0.ppa2"
     logseq_version: "0.10.9"
     obsidian_version: "1.13.4"
     jellyfin_media_player_version: "1.12.0"
+    nextcloud_sync_dir: "{{ home_dir }}/Nextcloud"
 
   pre_tasks:
+    # Several tasks stage downloaded debs here. It exists on a desktop install
+    # but not on a minimal one, so do not assume it.
+    - name: Ensure Downloads folder exists
+      ansible.builtin.file:
+        path: "{{ home_dir }}/Downloads"
+        state: directory
+        mode: "0755"
+      tags:
+        - always
+
     - name: Detect if I am on a mac
       ansible.builtin.stat:
         path: /usr/local/Homebrew/bin/brew
@@ -133,6 +151,11 @@
       ansible.builtin.include_tasks:
         file: tasks/desktop-apps.yml
       tags: desktop-apps
+
+    - name: Install Nextcloud desktop client
+      ansible.builtin.include_tasks:
+        file: tasks/nextcloud.yml
+      tags: nextcloud
 
     - name: Install OpenTofu
       ansible.builtin.include_tasks:

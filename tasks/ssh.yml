@@ -34,4 +34,7 @@
   community.general.ufw:
     rule: allow
     name: OpenSSH
-  tags: ssh
+  # `ufw` tag lets containers skip this -- no netfilter in an unprivileged one.
+  tags:
+    - ssh
+    - ufw

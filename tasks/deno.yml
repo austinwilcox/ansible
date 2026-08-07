@@ -1,3 +1,13 @@
+# The installer shells out to unzip. packages.yml happens to install it first
+# on a full run, but declare it here so `--tags deno` works on its own.
+- name: Install Deno dependencies
+  become: true
+  ansible.builtin.apt:
+    name: unzip
+    state: present
+  when: ansible_system == "Linux" and ansible_pkg_mgr == "apt"
+  tags: deno
+
 - name: Ensure Downloads folder exists
   ansible.builtin.file:
     path: "{{ home_dir }}/Downloads"

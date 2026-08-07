@@ -1,0 +1,27 @@
+# The skip_list is a burn-down list, not a permanent exemption. Every rule here
+# is currently violated by existing tasks; skipping them keeps CI meaningful
+# (a *new* violation of any other rule still fails) instead of permanently red.
+# Delete entries as the tasks get cleaned up.
+#
+# Current counts, from `ansible-lint`:
+#   no-changed-when            15
+#   command-instead-of-shell   10
+#   risky-shell-pipe            3
+#   no-handler                  3
+#   command-instead-of-module   2
+#   name[casing]                1
+#
+# no-changed-when overlaps with what the CI idempotence job measures directly,
+# so that one is the least urgent to chase in the linter.
+skip_list:
+  - no-changed-when
+  - command-instead-of-shell
+  - command-instead-of-module
+  - risky-shell-pipe
+  - no-handler
+  - name[casing]
+  # A few URLs and apt_repository lines are legitimately long.
+  - yaml[line-length]
+
+exclude_paths:
+  - .github/
